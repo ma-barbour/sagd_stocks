@@ -132,8 +132,8 @@
       <!-- 5. Combined PCA Regression Predictor & Alpha Spread -->
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
         <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="pca-combined-title">PCA REGRESSION PREDICTION</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">ACTUAL VS PREDICTED SAGD-WEIGHTED MARKET TREND</p>
+          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="pca-combined-title">PCA REGRESSION (TRAILING 3-MONTH)</h2>
+          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-combined-subtitle">ACTUAL VS PREDICTED SAGD-WEIGHTED MARKET TREND</p>
         </div>
         <div id="pca-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
       </div>
@@ -142,7 +142,6 @@
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
         <div class="mb-3 px-1">
           <h2 class="text-lg sm:text-xl font-bold text-gray-900">IDIOSYNCRATIC PCA LOADINGS</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">EXAMINING HOW HIGHER-ORDER COMPONENTS ISOLATE SPECIFIC TICKER VARIANCE</p>
         </div>
         <div id="pca-loadings-faceted-chart" class="w-full h-[350px]"></div>
       </div>
@@ -280,7 +279,14 @@
           document.getElementById('relative-chart-title').innerText = `INDEXED PERFORMANCE VS PEERS AND BENCHMARK: ${selectedSymbol}`;
           document.getElementById('spread-chart-title').innerText = `PRICE SPREAD Z-SCORE (LOG-RATIO, 50-DAY ROLLING): ${selectedSymbol}`;
           document.getElementById('spread-chart-subtitle').innerText = `NEGATIVE Z-SCORE INDICATES A BELOW AVERAGE PRICE FOR ${selectedSymbol}`;
+          
+          // Updated PCA Combined Chart Text & Dynamic Variance
           document.getElementById('pca-combined-title').innerText = `PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
+          let pc1Variance = 0;
+          if (appData.pca && appData.pca.variance_explained && appData.pca.variance_explained['PC1']) {
+            pc1Variance = (appData.pca.variance_explained['PC1'] * 100).toFixed(1);
+          }
+          document.getElementById('pca-combined-subtitle').innerText = `ACTUAL VS PREDICTED SAGD-WEIGHTED MARKET TREND (${pc1Variance}% VARIANCE)`;
 
           const tickerData = rawPrices
             .filter(d => d.symbol === selectedSymbol)
@@ -614,7 +620,7 @@
             Plotly.newPlot('spread-chart', spreadTraces, layoutSpread, { responsive: true, displayModeBar: false });
           } catch(e) { console.error("Error rendering Chart 4:", e); }
 
-          // 5. COMBINED PCA REGRESSION & ALPHA RESIDUAL
+          // 5. COMBINED PCA REGRESSION & ALPHA RESIDUAL (MOBILE OPTIMIZED)
           if (appData.pca && appData.pca.scores) {
             try {
               const scoresData = appData.pca.scores;
@@ -674,34 +680,11 @@
                   }
                 }
 
-                // Gather Variance Data for left-side horizontal bar chart
-                const varianceData = appData.pca.variance_explained;
-                let pcs = [], varValues = [];
-                if (varianceData) {
-                  // Reverse arrays to render PC1 at the top of the horizontal bar chart
-                  pcs = Object.keys(varianceData).filter(k => k.startsWith('PC')).reverse();
-                  varValues = pcs.map(pc => varianceData[pc] * 100);
-                }
-
-                // Trace for Variance (Horizontal Bar)
-                const traceVariance = {
-                  x: varValues,
-                  y: pcs,
-                  name: 'VARIANCE',
-                  type: 'bar',
-                  orientation: 'h',
-                  xaxis: 'x1',
-                  yaxis: 'y1',
-                  marker: { color: '#9CA3AF', line: { color: '#4B5563', width: 1 } },
-                  hovertemplate: '<b>%{y}</b><br>Explained Volatility: %{x:.1f}%<extra></extra>',
-                  showlegend: false
-                };
-
                 // Traces for Regression Predictor
                 const traceActual = {
                   x: pcaDates, y: actualIndex, name: `ACTUAL (${selectedSymbol})`,
                   type: 'scatter', mode: 'lines',
-                  xaxis: 'x2', yaxis: 'y2',
+                  xaxis: 'x1', yaxis: 'y1',
                   line: { color: selectedColorSolid, width: 4 },
                   hovertemplate: `<b>ACTUAL:</b> %{y:.1f} pts<extra></extra>`
                 };
@@ -709,7 +692,7 @@
                 const tracePredicted = {
                   x: pcaDates, y: predIndex, name: `PCA PREDICTED (PC1)`,
                   type: 'scatter', mode: 'lines',
-                  xaxis: 'x2', yaxis: 'y2',
+                  xaxis: 'x1', yaxis: 'y1',
                   line: { color: selectedColorSolid, width: 2, dash: 'dash' },
                   hovertemplate: `<b>PREDICTED:</b> %{y:.1f} pts<extra></extra>`
                 };
@@ -718,26 +701,22 @@
                 const traceAlpha = {
                   x: pcaDates, y: alphaResidual, name: `ALPHA SPREAD`,
                   type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: selectedColorAlpha,
-                  xaxis: 'x2', yaxis: 'y3',
+                  xaxis: 'x1', yaxis: 'y2',
                   line: { color: selectedColorSolid, width: 1.5 }, showlegend: false,
                   hovertemplate: `<b>ALPHA:</b> %{y:.1f} pts<extra></extra>`
                 };
 
                 const layoutCombinedPca = {
                   ...commonLayout, 
-                  // Subplot 1 (Variance - Left 12%)
-                  xaxis: { domain: [0, 0.12], anchor: 'y', showgrid: false, linecolor: '#e5e7eb', title: 'VAR (%)', tickfont: { size: 10 } }, 
-                  yaxis: { domain: [0, 1], anchor: 'x', gridcolor: '#f3f4f6', linecolor: '#e5e7eb' }, 
-                  // Subplot 2 (Regression & Alpha - Right 75%)
-                  xaxis2: { domain: [0.25, 1], anchor: 'y3', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
-                  yaxis2: { domain: [0.25, 1], anchor: 'x2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'INDEXED PRICE' },
-                  yaxis3: { domain: [0, 0.18], anchor: 'x2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'ALPHA', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
+                  xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
+                  yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'INDEXED PRICE' },
+                  yaxis2: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'ALPHA', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
                   hovermode: 'x unified', 
                   legend: { orientation: 'h', y: 1.12, font: { size: 14 } },
                   barmode: 'group'
                 };
 
-                Plotly.newPlot('pca-combined-chart', [traceVariance, tracePredicted, traceActual, traceAlpha], layoutCombinedPca, { responsive: true, displayModeBar: false });
+                Plotly.newPlot('pca-combined-chart', [tracePredicted, traceActual, traceAlpha], layoutCombinedPca, { responsive: true, displayModeBar: false });
               }
             } catch(e) { console.error("Error rendering Chart 5 (Combined PCA Regression):", e); }
             
@@ -783,12 +762,12 @@
                 ...commonLayout,
                 margin: { t: 30, r: 20, l: 60, b: 40 },
                 grid: { rows: 1, columns: 3, pattern: 'independent' },
-                xaxis:  { domain: [0, 0.28], linecolor: '#e5e7eb' },
-                yaxis:  { domain: [0, 1], gridcolor: '#f3f4f6', title: `PC2 (${assignedFactors['PC2']?.symbol || ''})`, zeroline: true, zerolinecolor: '#000000' },
-                xaxis2: { domain: [0.36, 0.64], linecolor: '#e5e7eb' },
-                yaxis2: { domain: [0, 1], gridcolor: '#f3f4f6', title: `PC3 (${assignedFactors['PC3']?.symbol || ''})`, zeroline: true, zerolinecolor: '#000000' },
-                xaxis3: { domain: [0.72, 1.0], linecolor: '#e5e7eb' },
-                yaxis3: { domain: [0, 1], gridcolor: '#f3f4f6', title: `PC4 (${assignedFactors['PC4']?.symbol || ''})`, zeroline: true, zerolinecolor: '#000000' },
+                xaxis:  { domain: [0, 0.25], linecolor: '#e5e7eb' },
+                yaxis:  { domain: [0, 1], gridcolor: '#f3f4f6', title: { text: `PC2 (${assignedFactors['PC2']?.symbol || ''})`, standoff: 0 }, zeroline: true, zerolinecolor: '#000000' },
+                xaxis2: { domain: [0.375, 0.625], linecolor: '#e5e7eb' },
+                yaxis2: { domain: [0, 1], gridcolor: '#f3f4f6', title: { text: `PC3 (${assignedFactors['PC3']?.symbol || ''})`, standoff: 0 }, zeroline: true, zerolinecolor: '#000000' },
+                xaxis3: { domain: [0.75, 1.0], linecolor: '#e5e7eb' },
+                yaxis3: { domain: [0, 1], gridcolor: '#f3f4f6', title: { text: `PC4 (${assignedFactors['PC4']?.symbol || ''})`, standoff: 0 }, zeroline: true, zerolinecolor: '#000000' },
                 showlegend: false
               };
 

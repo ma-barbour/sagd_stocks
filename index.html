@@ -280,7 +280,7 @@
           document.getElementById('relative-chart-title').innerText = `INDEXED PERFORMANCE VS PEERS AND BENCHMARK: ${selectedSymbol}`;
           document.getElementById('spread-chart-title').innerText = `PRICE SPREAD Z-SCORE (LOG-RATIO, 50-DAY ROLLING): ${selectedSymbol}`;
           document.getElementById('spread-chart-subtitle').innerText = `NEGATIVE Z-SCORE INDICATES A BELOW AVERAGE PRICE FOR ${selectedSymbol}`;
-          document.getElementById('pca-combined-title').innerText = `PCA REGRESSION PREDICTION (TRAILING 3-MONTH): ${selectedSymbol}`;
+          document.getElementById('pca-combined-title').innerText = `PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
 
           const tickerData = rawPrices
             .filter(d => d.symbol === selectedSymbol)

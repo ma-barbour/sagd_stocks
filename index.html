@@ -494,13 +494,17 @@
             ];
 
             const layoutPriceAction = {
-              ...commonLayout, margin: { t: 10, r: 20, l: 50, b: 40 },
+              ...commonLayout, 
+              // Increased top margin (t: 50) to give the wrapping legend room to grow upward
+              margin: { t: 50, r: 20, l: 50, b: 40 },
               xaxis: { domain: [0, 0.15], showgrid: false, zeroline: false, showticklabels: false, linecolor: '#e5e7eb' },
               xaxis2: { domain: [0.18, 1], anchor: 'y2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
               yaxis:  { domain: [0.42, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'PRICE ($)' },
               yaxis3: { domain: [0.23, 0.38], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DRAWDOWN', titlefont: { size: 10 }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, ticksuffix: '%' },
               yaxis2: { domain: [0.00, 0.19], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'VOL', tickformat: '.2s', titlefont: { size: 10 } },
-              hovermode: 'x unified', legend: { orientation: 'h', y: 1.05, font: { size: 12 } }
+              hovermode: 'x unified', 
+              // Anchor the legend to its bottom edge and left edge
+              legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } }
             };
             Plotly.newPlot('price-chart', tracesPriceAction, layoutPriceAction, { responsive: true, displayModeBar: false });
           } catch(e) { console.error("Error rendering Chart 1:", e); }

@@ -760,15 +760,44 @@
 
               const layoutFacetedLoadings = {
                 ...commonLayout,
-                margin: { t: 30, r: 20, l: 60, b: 40 },
+                // Increased top margin (t: 60) to give the annotations plenty of headroom
+                margin: { t: 60, r: 20, l: 20, b: 40 },
                 grid: { rows: 1, columns: 3, pattern: 'independent' },
                 xaxis:  { domain: [0, 0.25], linecolor: '#e5e7eb' },
-                yaxis:  { domain: [0, 1], gridcolor: '#f3f4f6', title: { text: `PC2 (${assignedFactors['PC2']?.symbol || ''})`, standoff: 0 }, zeroline: true, zerolinecolor: '#000000' },
+                // Lock the range to [-1, 1] and force 0.2 increments
+                yaxis:  { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', dtick: 0.2, range: [-1, 1] },
                 xaxis2: { domain: [0.375, 0.625], linecolor: '#e5e7eb' },
-                yaxis2: { domain: [0, 1], gridcolor: '#f3f4f6', title: { text: `PC3 (${assignedFactors['PC3']?.symbol || ''})`, standoff: 0 }, zeroline: true, zerolinecolor: '#000000' },
+                yaxis2: { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', matches: 'y', dtick: 0.2 },
                 xaxis3: { domain: [0.75, 1.0], linecolor: '#e5e7eb' },
-                yaxis3: { domain: [0, 1], gridcolor: '#f3f4f6', title: { text: `PC4 (${assignedFactors['PC4']?.symbol || ''})`, standoff: 0 }, zeroline: true, zerolinecolor: '#000000' },
-                showlegend: false
+                yaxis3: { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', matches: 'y', dtick: 0.2 },
+                showlegend: false,
+                // Add titles above each subplot using annotations
+                annotations: [
+                  {
+                    text: `<b>PC2 (${assignedFactors['PC2']?.symbol || ''})</b>`,
+                    xref: 'paper', yref: 'paper',
+                    x: 0.125, y: 1.15, // Center of domain 1
+                    xanchor: 'center', yanchor: 'bottom',
+                    showarrow: false,
+                    font: { size: 14, color: '#374151' }
+                  },
+                  {
+                    text: `<b>PC3 (${assignedFactors['PC3']?.symbol || ''})</b>`,
+                    xref: 'paper', yref: 'paper',
+                    x: 0.5, y: 1.15, // Center of domain 2
+                    xanchor: 'center', yanchor: 'bottom',
+                    showarrow: false,
+                    font: { size: 14, color: '#374151' }
+                  },
+                  {
+                    text: `<b>PC4 (${assignedFactors['PC4']?.symbol || ''})</b>`,
+                    xref: 'paper', yref: 'paper',
+                    x: 0.875, y: 1.15, // Center of domain 3
+                    xanchor: 'center', yanchor: 'bottom',
+                    showarrow: false,
+                    font: { size: 14, color: '#374151' }
+                  }
+                ]
               };
 
               Plotly.newPlot('pca-loadings-faceted-chart', [tracePC2, tracePC3, tracePC4], layoutFacetedLoadings, { responsive: true, displayModeBar: false });

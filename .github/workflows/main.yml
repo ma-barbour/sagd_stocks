@@ -1,0 +1,39 @@
+name: Daily Data Update
+
+on:
+  schedule:
+    - cron: '0 11 * * 2-6'
+  workflow_dispatch: # Allows you to manually trigger the script via a button
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true # Uses pre-compiled binaries for much faster installation
+          
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+      - name: Install R packages
+        run: |
+          Rscript -e 'install.packages(c("tidyverse", "tidyquant", "jsonlite"))'
+          
+      - name: Run data pipeline
+        run: Rscript daily_data.R
+        
+      - name: Commit and Push app_data.json
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add app_data.json
+          # Only commit if the JSON file actually changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated data update" && git push)

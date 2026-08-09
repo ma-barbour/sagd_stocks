@@ -103,7 +103,7 @@
       <!-- 1. All-in-One PRICE ACTION Chart -->
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
         <div class="mb-3 px-1">
-          <h2 id="price-chart-title" class="text-lg sm:text-xl font-bold text-gray-900">PRICE ACTION</h2>
+          <h2 id="price-chart-title" class="text-lg sm:text-xl font-bold text-gray-900">TOTAL RETURN</h2>
         </div>
         <div id="price-chart" class="w-full h-[600px] sm:h-[700px]"></div>
       </div>
@@ -129,16 +129,16 @@
         <div id="spread-chart" class="w-full h-[600px]"></div>
       </div>
 
-      <!-- 5. Combined PCA Regression Predictor & Alpha Spread -->
+      <!-- 5. Combined PCA Regression Predictor & Alpha Spread (RETURNS) -->
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
         <div class="mb-3 px-1">
           <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="pca-combined-title">PCA REGRESSION (TRAILING 3-MONTH)</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-combined-subtitle">ACTUAL VS PREDICTED SAGD-WEIGHTED MARKET TREND</p>
+          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-combined-subtitle">ADJUSTED PRICE VS PREDICTED SAGD-WEIGHTED MARKET TREND</p>
         </div>
         <div id="pca-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
       </div>
 
-      <!-- 6. Idiosyncratic Factor Loadings Facet Plot (PC2, PC3, PC4) -->
+      <!-- 6. Idiosyncratic Factor Loadings Facet Plot (RETURNS) -->
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
         <div class="mb-3 px-1">
           <h2 class="text-lg sm:text-xl font-bold text-gray-900">IDIOSYNCRATIC PCA LOADINGS</h2>
@@ -146,13 +146,26 @@
         <div id="pca-loadings-faceted-chart" class="w-full h-[350px]"></div>
       </div>
 
-      <!-- 7. Cumulative Factor Spread -->
+      <!-- 7. Cumulative Factor Spread (RETURNS) -->
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
         <div class="mb-3 px-1">
           <h2 class="text-lg sm:text-xl font-bold text-gray-900">STOCK VS MARKET TREND (TRAILING 3-MONTH)</h2>
           <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">SAGD-WEIGHTED MARKET TREND (PC1) = 0</p>
         </div>
         <div id="pca-cum-spread-chart" class="w-full h-[400px]"></div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- NEW VOLUME PCA CHART                       -->
+      <!-- ========================================== -->
+
+      <!-- 8. Combined PCA Regression Predictor & Alpha Spread (VOLUME OVERLAY) -->
+      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
+        <div class="mb-3 px-1">
+          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="pca-vol-combined-title">VOLUME PCA REGRESSION (TRAILING 3-MONTH)</h2>
+          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-vol-combined-subtitle"></p>
+        </div>
+        <div id="pca-vol-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
       </div>
 
     </div>
@@ -274,19 +287,27 @@
         function renderDashboard(selectedSymbol, startYear) {
           const startDate = `${startYear}-01-01`;
           
-          document.getElementById('price-chart-title').innerText = `PRICE ACTION: ${selectedSymbol}`;
+          document.getElementById('price-chart-title').innerText = `TOTAL RETURN: ${selectedSymbol}`;
           document.getElementById('comp-drawdown-chart-title').innerText = `COMPARATIVE DRAWDOWNS`;
           document.getElementById('relative-chart-title').innerText = `INDEXED PERFORMANCE VS PEERS AND BENCHMARK: ${selectedSymbol}`;
           document.getElementById('spread-chart-title').innerText = `PRICE SPREAD Z-SCORE (LOG-RATIO, 50-DAY ROLLING): ${selectedSymbol}`;
           document.getElementById('spread-chart-subtitle').innerText = `NEGATIVE Z-SCORE INDICATES A BELOW AVERAGE PRICE FOR ${selectedSymbol}`;
           
-          // Updated PCA Combined Chart Text & Dynamic Variance
+          // Updated PCA Combined Chart Text & Dynamic Variance (RETURNS)
           document.getElementById('pca-combined-title').innerText = `PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
           let pc1Variance = 0;
           if (appData.pca && appData.pca.variance_explained && appData.pca.variance_explained['PC1']) {
             pc1Variance = (appData.pca.variance_explained['PC1'] * 100).toFixed(1);
           }
-          document.getElementById('pca-combined-subtitle').innerText = `ACTUAL VS PREDICTED SAGD-WEIGHTED MARKET TREND (${pc1Variance}% VARIANCE)`;
+          document.getElementById('pca-combined-subtitle').innerText = `ADJUSTED PRICE VS PREDICTED SAGD-WEIGHTED MARKET TREND (${pc1Variance}% VARIANCE)`;
+
+          // Updated PCA Combined Chart Text & Dynamic Variance (VOLUME)
+          document.getElementById('pca-vol-combined-title').innerText = `VOLUME PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
+          let pc1VolVariance = 0;
+          if (appData.pca_volume && appData.pca_volume.variance_explained && appData.pca_volume.variance_explained['PC1']) {
+            pc1VolVariance = (appData.pca_volume.variance_explained['PC1'] * 100).toFixed(1);
+          }
+          document.getElementById('pca-vol-combined-subtitle').innerText = `STANDARDIZED VOLUME VS PREDICTED SAGD MARKET VOLUME (${pc1VolVariance}% VARIANCE)`;
 
           const tickerData = rawPrices
             .filter(d => d.symbol === selectedSymbol)
@@ -295,7 +316,7 @@
           if (tickerData.length === 0) return;
 
           // ==========================================
-          // DYNAMIC FACTOR ASSIGNMENT (PC2, PC3, PC4)
+          // DYNAMIC FACTOR ASSIGNMENT (RETURNS ONLY)
           // ==========================================
           const assignedFactors = {};
           if (appData.pca && appData.pca.loadings) {
@@ -495,15 +516,13 @@
 
             const layoutPriceAction = {
               ...commonLayout, 
-              // Increased top margin (t: 50) to give the wrapping legend room to grow upward
               margin: { t: 50, r: 20, l: 50, b: 40 },
               xaxis: { domain: [0, 0.15], showgrid: false, zeroline: false, showticklabels: false, linecolor: '#e5e7eb' },
               xaxis2: { domain: [0.18, 1], anchor: 'y2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
-              yaxis:  { domain: [0.42, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'PRICE ($)' },
+              yaxis:  { domain: [0.42, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'ADJUSTED PRICE ($)' },
               yaxis3: { domain: [0.23, 0.38], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DRAWDOWN', titlefont: { size: 10 }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, ticksuffix: '%' },
               yaxis2: { domain: [0.00, 0.19], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'VOL', tickformat: '.2s', titlefont: { size: 10 } },
               hovermode: 'x unified', 
-              // Anchor the legend to its bottom edge and left edge
               legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } }
             };
             Plotly.newPlot('price-chart', tracesPriceAction, layoutPriceAction, { responsive: true, displayModeBar: false });
@@ -624,7 +643,7 @@
             Plotly.newPlot('spread-chart', spreadTraces, layoutSpread, { responsive: true, displayModeBar: false });
           } catch(e) { console.error("Error rendering Chart 4:", e); }
 
-          // 5. COMBINED PCA REGRESSION & ALPHA RESIDUAL (MOBILE OPTIMIZED)
+          // 5. COMBINED PCA REGRESSION & ALPHA RESIDUAL (RETURNS)
           if (appData.pca && appData.pca.scores) {
             try {
               const scoresData = appData.pca.scores;
@@ -632,7 +651,6 @@
               const targetRets = [];
               const pc1 = [];
 
-              // Gather date-aligned returns and PC1 data
               scoresData.forEach(row => {
                 const date = row.date;
                 const priceRow = rawPrices.find(p => p.symbol === selectedSymbol && p.date === date);
@@ -645,28 +663,18 @@
 
               if (pcaDates.length > 0) {
                 const n = pcaDates.length;
-                let sumY = 0, sumPC1 = 0;
-                let sumPC1_sq = 0;
-                let sumY_PC1 = 0;
+                let sumY = 0, sumPC1 = 0, sumPC1_sq = 0, sumY_PC1 = 0;
 
                 for(let i=0; i<n; i++) {
                   let y = targetRets[i];
                   let p1 = pc1[i];
-
-                  sumY += y;
-                  sumPC1 += p1;
-                  sumPC1_sq += p1 * p1;
-                  sumY_PC1 += y * p1;
+                  sumY += y; sumPC1 += p1; sumPC1_sq += p1 * p1; sumY_PC1 += y * p1;
                 }
 
-                const meanY = sumY / n;
-                const meanPC1 = sumPC1 / n;
-
-                // Simple Linear Regression strictly for PC1
+                const meanY = sumY / n; const meanPC1 = sumPC1 / n;
                 const covY_PC1 = (sumY_PC1 - n * meanY * meanPC1) / (n - 1);
                 const varPC1 = (sumPC1_sq - n * meanPC1 * meanPC1) / (n - 1);
                 const beta1 = covY_PC1 / varPC1;
-
                 const alpha = meanY - (beta1 * meanPC1);
 
                 const actualIndex = [100];
@@ -684,24 +692,22 @@
                   }
                 }
 
-                // Traces for Regression Predictor
                 const traceActual = {
-                  x: pcaDates, y: actualIndex, name: `ACTUAL (${selectedSymbol})`,
+                  x: pcaDates, y: actualIndex, name: selectedSymbol,
                   type: 'scatter', mode: 'lines',
                   xaxis: 'x1', yaxis: 'y1',
                   line: { color: selectedColorSolid, width: 4 },
-                  hovertemplate: `<b>ACTUAL:</b> %{y:.1f} pts<extra></extra>`
+                  hovertemplate: `<b>${selectedSymbol}:</b> %{y:.1f} pts<extra></extra>`
                 };
                 
                 const tracePredicted = {
-                  x: pcaDates, y: predIndex, name: `PCA PREDICTED (PC1)`,
+                  x: pcaDates, y: predIndex, name: `PC1`,
                   type: 'scatter', mode: 'lines',
                   xaxis: 'x1', yaxis: 'y1',
                   line: { color: selectedColorSolid, width: 2, dash: 'dash' },
-                  hovertemplate: `<b>PREDICTED:</b> %{y:.1f} pts<extra></extra>`
+                  hovertemplate: `<b>PC1:</b> %{y:.1f} pts<extra></extra>`
                 };
 
-                // Trace for Alpha Residual Spread
                 const traceAlpha = {
                   x: pcaDates, y: alphaResidual, name: `ALPHA SPREAD`,
                   type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: selectedColorAlpha,
@@ -713,7 +719,7 @@
                 const layoutCombinedPca = {
                   ...commonLayout, 
                   xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
-                  yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'INDEXED PRICE' },
+                  yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'INDEXED RETURN (BASE = 100)' },
                   yaxis2: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'ALPHA', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
                   hovermode: 'x unified', 
                   legend: { orientation: 'h', y: 1.12, font: { size: 14 } },
@@ -723,94 +729,41 @@
                 Plotly.newPlot('pca-combined-chart', [tracePredicted, traceActual, traceAlpha], layoutCombinedPca, { responsive: true, displayModeBar: false });
               }
             } catch(e) { console.error("Error rendering Chart 5 (Combined PCA Regression):", e); }
-            
           }
 
-          // ==========================================
-          // 6. FACETED LOADINGS CHART (PC2, PC3, PC4)
-          // ==========================================
+          // 6. FACETED LOADINGS CHART (RETURNS)
           if (appData.pca && appData.pca.loadings) {
             try {
               const loadings = appData.pca.loadings;
               const symbols = loadings.map(d => d.symbol.toUpperCase());
               const barColors = symbols.map(sym => tickerColors[sym]?.solid || '#4B5563');
 
-              const tracePC2 = {
-                x: symbols,
-                y: loadings.map(d => d.PC2),
-                type: 'bar',
-                xaxis: 'x1', yaxis: 'y1',
-                marker: { color: barColors },
-                hovertemplate: '<b>%{x}</b><br>PC2 Loading: %{y:.3f}<extra></extra>'
-              };
-
-              const tracePC3 = {
-                x: symbols,
-                y: loadings.map(d => d.PC3),
-                type: 'bar',
-                xaxis: 'x2', yaxis: 'y2',
-                marker: { color: barColors },
-                hovertemplate: '<b>%{x}</b><br>PC3 Loading: %{y:.3f}<extra></extra>'
-              };
-
-              const tracePC4 = {
-                x: symbols,
-                y: loadings.map(d => d.PC4),
-                type: 'bar',
-                xaxis: 'x3', yaxis: 'y3',
-                marker: { color: barColors },
-                hovertemplate: '<b>%{x}</b><br>PC4 Loading: %{y:.3f}<extra></extra>'
-              };
+              const tracePC2 = { x: symbols, y: loadings.map(d => d.PC2), type: 'bar', xaxis: 'x1', yaxis: 'y1', marker: { color: barColors }, hovertemplate: '<b>%{x}</b><br>PC2 Loading: %{y:.3f}<extra></extra>' };
+              const tracePC3 = { x: symbols, y: loadings.map(d => d.PC3), type: 'bar', xaxis: 'x2', yaxis: 'y2', marker: { color: barColors }, hovertemplate: '<b>%{x}</b><br>PC3 Loading: %{y:.3f}<extra></extra>' };
+              const tracePC4 = { x: symbols, y: loadings.map(d => d.PC4), type: 'bar', xaxis: 'x3', yaxis: 'y3', marker: { color: barColors }, hovertemplate: '<b>%{x}</b><br>PC4 Loading: %{y:.3f}<extra></extra>' };
 
               const layoutFacetedLoadings = {
                 ...commonLayout,
-                // Increased top margin (t: 60) to give the annotations plenty of headroom
                 margin: { t: 60, r: 20, l: 20, b: 40 },
                 grid: { rows: 1, columns: 3, pattern: 'independent' },
                 xaxis:  { domain: [0, 0.25], linecolor: '#e5e7eb' },
-                // Lock the range to [-1, 1] and force 0.2 increments
                 yaxis:  { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', dtick: 0.2, range: [-1, 1] },
                 xaxis2: { domain: [0.375, 0.625], linecolor: '#e5e7eb' },
                 yaxis2: { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', matches: 'y', dtick: 0.2 },
                 xaxis3: { domain: [0.75, 1.0], linecolor: '#e5e7eb' },
                 yaxis3: { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', matches: 'y', dtick: 0.2 },
                 showlegend: false,
-                // Add titles above each subplot using annotations
                 annotations: [
-                  {
-                    text: `<b>PC2 (${assignedFactors['PC2']?.symbol || ''})</b>`,
-                    xref: 'paper', yref: 'paper',
-                    x: 0.125, y: 1.15, // Center of domain 1
-                    xanchor: 'center', yanchor: 'bottom',
-                    showarrow: false,
-                    font: { size: 14, color: '#374151' }
-                  },
-                  {
-                    text: `<b>PC3 (${assignedFactors['PC3']?.symbol || ''})</b>`,
-                    xref: 'paper', yref: 'paper',
-                    x: 0.5, y: 1.15, // Center of domain 2
-                    xanchor: 'center', yanchor: 'bottom',
-                    showarrow: false,
-                    font: { size: 14, color: '#374151' }
-                  },
-                  {
-                    text: `<b>PC4 (${assignedFactors['PC4']?.symbol || ''})</b>`,
-                    xref: 'paper', yref: 'paper',
-                    x: 0.875, y: 1.15, // Center of domain 3
-                    xanchor: 'center', yanchor: 'bottom',
-                    showarrow: false,
-                    font: { size: 14, color: '#374151' }
-                  }
+                  { text: `<b>PC2 (${assignedFactors['PC2']?.symbol || ''})</b>`, xref: 'paper', yref: 'paper', x: 0.125, y: 1.15, xanchor: 'center', yanchor: 'bottom', showarrow: false, font: { size: 14, color: '#374151' } },
+                  { text: `<b>PC3 (${assignedFactors['PC3']?.symbol || ''})</b>`, xref: 'paper', yref: 'paper', x: 0.5, y: 1.15, xanchor: 'center', yanchor: 'bottom', showarrow: false, font: { size: 14, color: '#374151' } },
+                  { text: `<b>PC4 (${assignedFactors['PC4']?.symbol || ''})</b>`, xref: 'paper', yref: 'paper', x: 0.875, y: 1.15, xanchor: 'center', yanchor: 'bottom', showarrow: false, font: { size: 14, color: '#374151' } }
                 ]
               };
-
               Plotly.newPlot('pca-loadings-faceted-chart', [tracePC2, tracePC3, tracePC4], layoutFacetedLoadings, { responsive: true, displayModeBar: false });
             } catch(e) { console.error("Error rendering Chart 6 (Faceted Loadings):", e); }
           }
 
-          // ==========================================
-          // 7. CUMULATIVE FACTOR SPREAD (STOCK-SPECIFIC MOMENTUM)
-          // ==========================================
+          // 7. CUMULATIVE FACTOR SPREAD (RETURNS)
           if (appData.pca && appData.pca.scores && Object.keys(assignedFactors).length > 0) {
             try {
               const scoresData = appData.pca.scores;
@@ -819,47 +772,151 @@
               ['PC2', 'PC3', 'PC4'].forEach(pc => {
                 if (!assignedFactors[pc]) return;
                 const { symbol, sign } = assignedFactors[pc];
-                
-                let cumSpread = 0;
-                const xDates = [];
-                const rawY = [];
+                let cumSpread = 0; const xDates = []; const rawY = [];
                 
                 scoresData.forEach(row => {
-                  // Only accumulate the idiosyncratic factor (treating PC1 as a flat 0 baseline)
                   const pc_k = row[pc] * sign; 
                   cumSpread += pc_k;
-                  
-                  xDates.push(row.date);
-                  rawY.push(cumSpread);
+                  xDates.push(row.date); rawY.push(cumSpread);
                 });
 
-                // Offset the entire array so Day 1 is exactly 0
                 const offset = rawY[0] || 0;
                 const ySpread = rawY.map(y => y - offset);
 
                 spreadTraces.push({
-                  x: xDates,
-                  y: ySpread,
-                  name: `${symbol} (${pc})`,
-                  type: 'scatter',
-                  mode: 'lines',
+                  x: xDates, y: ySpread, name: `${symbol} (${pc})`,
+                  type: 'scatter', mode: 'lines',
                   line: { color: tickerColors[symbol]?.solid || '#4B5563', width: 3 },
                   hovertemplate: `<b>${symbol} (${pc})</b><br>Factor Drift: %{y:.2f}<extra></extra>`
                 });
               });
 
               const layoutSpreadC = {
-                ...commonLayout,
-                margin: { t: 10, r: 20, l: 60, b: 40 },
+                ...commonLayout, margin: { t: 10, r: 20, l: 60, b: 40 },
                 xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
                 yaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DIVERGENCE', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
-                hovermode: 'x unified',
-                legend: { orientation: 'h', y: 1.15, font: { size: 14 } }
+                hovermode: 'x unified', legend: { orientation: 'h', y: 1.15, font: { size: 14 } }
               };
-
               Plotly.newPlot('pca-cum-spread-chart', spreadTraces, layoutSpreadC, { responsive: true, displayModeBar: false });
-
             } catch(e) { console.error("Error rendering Chart 7 (Cum Spread):", e); }
+          }
+
+          // ==========================================
+          // 8. COMBINED PCA REGRESSION (VOLUME + RETURNS OVERLAY)
+          // ==========================================
+          if (appData.pca_volume && appData.pca_volume.scores && appData.pca && appData.pca.scores) {
+            try {
+              const volScores = appData.pca_volume.scores;
+              const retScores = appData.pca.scores;
+              
+              const pcaDates = [];
+              const targetZ = [];
+              const volPC1 = [];
+              const targetRet = [];
+              const retPC1 = [];
+
+              // Gather date-aligned data for BOTH volume and returns
+              volScores.forEach(vRow => {
+                const date = vRow.date;
+                const rRow = retScores.find(r => r.date === date);
+                const priceRow = rawPrices.find(p => p.symbol === selectedSymbol && p.date === date);
+                
+                if (priceRow && rRow && priceRow.vol_zscore !== null && priceRow.daily_return !== null) {
+                  pcaDates.push(date);
+                  targetZ.push(priceRow.vol_zscore);
+                  volPC1.push(vRow.PC1);
+                  targetRet.push(priceRow.daily_return / 100);
+                  retPC1.push(rRow.PC1);
+                }
+              });
+
+              if (pcaDates.length > 0) {
+                const n = pcaDates.length;
+                
+                // Volume Math
+                let sumY_v = 0, sumP_v = 0, sumP2_v = 0, sumYP_v = 0;
+                // Return Math
+                let sumY_r = 0, sumP_r = 0, sumP2_r = 0, sumYP_r = 0;
+
+                for(let i=0; i<n; i++) {
+                  let yv = targetZ[i], pv = volPC1[i];
+                  sumY_v += yv; sumP_v += pv; sumP2_v += pv*pv; sumYP_v += yv*pv;
+                  
+                  let yr = targetRet[i], pr = retPC1[i];
+                  sumY_r += yr; sumP_r += pr; sumP2_r += pr*pr; sumYP_r += yr*pr;
+                }
+
+                // Vol Regression
+                const meanY_v = sumY_v/n, meanP_v = sumP_v/n;
+                const beta_v = ((sumYP_v - n*meanY_v*meanP_v)/(n-1)) / ((sumP2_v - n*meanP_v*meanP_v)/(n-1));
+                const alpha_v = meanY_v - beta_v*meanP_v;
+
+                // Ret Regression
+                const meanY_r = sumY_r/n, meanP_r = sumP_r/n;
+                const beta_r = ((sumYP_r - n*meanY_r*meanP_r)/(n-1)) / ((sumP2_r - n*meanP_r*meanP_r)/(n-1));
+                const alpha_r = meanY_r - beta_r*meanP_r;
+
+                const actualZ = [], predZ = [], volAlpha = [];
+                const actualIndex = [100], predIndex = [100], retAlpha = [0];
+
+                for(let i=0; i<n; i++) {
+                  // Standardized Volume
+                  let pZ = alpha_v + beta_v*volPC1[i];
+                  actualZ.push(targetZ[i]);
+                  predZ.push(pZ);
+                  volAlpha.push(targetZ[i] - pZ);
+
+                  // Indexed Price
+                  let pR = alpha_r + beta_r*retPC1[i];
+                  if(i > 0) {
+                    let nA = actualIndex[i-1] * (1 + targetRet[i]);
+                    let nP = predIndex[i-1] * (1 + pR);
+                    actualIndex.push(nA);
+                    predIndex.push(nP);
+                    retAlpha.push(nA - nP);
+                  }
+                }
+
+                // Calculate symmetrical ranges to force 0 and 100 alignment
+                const maxVol = Math.max(...actualZ.map(Math.abs), ...predZ.map(Math.abs));
+                const maxRet = Math.max(...actualIndex.map(y => Math.abs(y - 100)), ...predIndex.map(y => Math.abs(y - 100)));
+                const rangeVol = [-maxVol * 1.1, maxVol * 1.1];
+                const rangeRet = [100 - maxRet * 1.1, 100 + maxRet * 1.1];
+
+                const maxVolAlpha = Math.max(...volAlpha.map(Math.abs));
+                const maxRetAlpha = Math.max(...retAlpha.map(Math.abs));
+                const rangeVolAlpha = [-maxVolAlpha * 1.1, maxVolAlpha * 1.1];
+                const rangeRetAlpha = [-maxRetAlpha * 1.1, maxRetAlpha * 1.1];
+
+                // Return Traces (Background Layer - Grey)
+                const traceRetActual = { x: pcaDates, y: actualIndex, name: `PRICE`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y3', line: { color: 'rgba(156, 163, 175, 0.4)', width: 2 }, hovertemplate: `<b>PRICE:</b> %{y:.1f} pts<extra></extra>` };
+                const traceRetPredicted = { x: pcaDates, y: predIndex, name: `PRICE PC1`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y3', line: { color: 'rgba(156, 163, 175, 0.4)', width: 1.5, dash: 'dash' }, hoverinfo: 'skip' };
+                const traceRetAlpha = { x: pcaDates, y: retAlpha, name: `PRICE ALPHA`, type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: 'rgba(156, 163, 175, 0.15)', xaxis: 'x1', yaxis: 'y4', line: { color: 'rgba(156, 163, 175, 0.3)', width: 1 }, showlegend: false, hovertemplate: `<b>PRICE ALPHA:</b> %{y:.1f} pts<extra></extra>` };
+
+                // Volume Traces (Foreground Layer - Solid Colors)
+                const traceVolActual = { x: pcaDates, y: actualZ, name: `VOL`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y1', line: { color: selectedColorSolid, width: 3 }, hovertemplate: `<b>VOL:</b> %{y:.2f} Z<extra></extra>` };
+                const traceVolPredicted = { x: pcaDates, y: predZ, name: `VOL PC1`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y1', line: { color: selectedColorSolid, width: 2, dash: 'dash' }, hovertemplate: `<b>PRED VOL:</b> %{y:.2f} Z<extra></extra>` };
+                const traceVolAlpha = { x: pcaDates, y: volAlpha, name: `ABNORMAL VOL`, type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: selectedColorAlpha, xaxis: 'x1', yaxis: 'y2', line: { color: selectedColorSolid, width: 1.5 }, showlegend: false, hovertemplate: `<b>ABNORMAL VOL:</b> %{y:.2f} Z<extra></extra>` };
+
+                const layoutCombinedPcaVol = {
+                  ...commonLayout, 
+                  margin: { t: 10, r: 60, l: 60, b: 40 }, // Expanded right margin to prevent tick overlap
+                  xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
+                  // Primary Left Axes (Volume) - Colored by Ticker
+                  yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'VOL (Z-SCORE)', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, range: rangeVol },
+                  yaxis2: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'ABN VOL', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, range: rangeVolAlpha },
+                  // Secondary Right Axes (Returns Overlay) - Grey
+                  yaxis3: { domain: [0.25, 1], overlaying: 'y', side: 'right', showgrid: false, title: { text: 'INDEXED RETURN (BASE = 100)', font: { color: '#9CA3AF' } }, tickfont: { color: '#9CA3AF' }, zeroline: false, range: rangeRet },
+                  yaxis4: { domain: [0, 0.18], overlaying: 'y2', side: 'right', showgrid: false, title: { text: 'ALPHA', font: { color: '#9CA3AF' } }, tickfont: { color: '#9CA3AF' }, zeroline: false, range: rangeRetAlpha },
+                  hovermode: 'x unified', 
+                  legend: { orientation: 'h', y: 1.12, font: { size: 12 } },
+                  barmode: 'group'
+                };
+
+                // By ordering Ret traces first, they draw in the background behind Vol traces
+                Plotly.newPlot('pca-vol-combined-chart', [traceRetPredicted, traceRetActual, traceRetAlpha, traceVolPredicted, traceVolActual, traceVolAlpha], layoutCombinedPcaVol, { responsive: true, displayModeBar: false });
+              }
+            } catch(e) { console.error("Error rendering Chart 8 (Volume PCA Regression):", e); }
           }
 
         }

@@ -162,7 +162,7 @@
       </div>
 
       <!-- ========================================== -->
-      <!-- NEW VOLUME PCA CHART                       -->
+      <!-- NEW VOLUME CHARTS                          -->
       <!-- ========================================== -->
 
       <!-- 8. Combined PCA Regression Predictor & Alpha Spread (VOLUME OVERLAY) -->
@@ -172,6 +172,15 @@
           <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-vol-combined-subtitle"></p>
         </div>
         <div id="pca-vol-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
+      </div>
+
+      <!-- 9. On-Balance Volume (CVD/OBV) -->
+      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
+        <div class="mb-3 px-1">
+          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="obv-chart-title">ON-BALANCE VOLUME (OBV)</h2>
+          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">CUMULATIVE VOLUME DELTA OVERLAID WITH PRICE TREND</p>
+        </div>
+        <div id="obv-chart" class="w-full h-[400px]"></div>
       </div>
 
       <!-- Bottom Liquidity Summary Cards -->
@@ -309,7 +318,8 @@
           document.getElementById('relative-chart-title').innerText = `INDEXED PERFORMANCE VS PEERS AND BENCHMARK: ${selectedSymbol}`;
           document.getElementById('spread-chart-title').innerText = `PRICE SPREAD Z-SCORE (LOG-RATIO, 50-DAY ROLLING): ${selectedSymbol}`;
           document.getElementById('spread-chart-subtitle').innerText = `NEGATIVE Z-SCORE INDICATES A BELOW AVERAGE PRICE FOR ${selectedSymbol}`;
-          
+          document.getElementById('obv-chart-title').innerText = `ON-BALANCE VOLUME (OBV): ${selectedSymbol}`;
+
           // Updated PCA Combined Chart Text & Dynamic Variance (RETURNS)
           document.getElementById('pca-combined-title').innerText = `PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
           let pc1Variance = 0;
@@ -485,18 +495,13 @@
             vwapTooltip.title = 'Data unavailable';
           }
 
-          // ... (VWAP block above remains the same) ...
-          
           document.getElementById('card-predicted').innerText = predictedPriceText;
-          
           const predictedTooltip = document.getElementById('predicted-tooltip');
           if (selectedSymbol === 'XEG') {
             predictedTooltip.title = "Prediction not applicable for the sector benchmark.";
           } else {
             predictedTooltip.title = "Price predicted using 3-month PCA for SAGD-weighted market trend and stock-specific returns.";
           }
-
-          // UPDATE METRIC CARDS (Bottom Row - Illiquidity)
 
           // UPDATE METRIC CARDS (Bottom Row - Illiquidity)
           const illiqEl = document.getElementById('card-illiq');
@@ -987,6 +992,111 @@
               }
             } catch(e) { console.error("Error rendering Chart 8 (Volume PCA Regression):", e); }
           }
+
+          // ==========================================
+          // 9. ON-BALANCE VOLUME (OBV)
+          // ==========================================
+          try {
+            let currentOBV = 0;
+            const obvY = [];
+            const obvDates = [];
+            const priceY = [];
+
+            zoomedData.forEach(d => {
+              obvDates.push(d.date);
+              priceY.push(d.adjusted);
+              
+              if (d.daily_return > 0) {
+                currentOBV += d.volume;
+              } else if (d.daily_return < 0) {
+                currentOBV -= d.volume;
+              }
+              obvY.push(currentOBV);
+            });
+
+            // Calculate smoothed 5-day trendlines
+            const obvSmoothed = computeSMA(obvY, 5);
+            const priceSmoothed = computeSMA(priceY, 5);
+
+            // Min-Max Normalization to calculate visual divergence
+            const validObv = obvSmoothed.filter(v => v !== null);
+            const validPrice = priceSmoothed.filter(v => v !== null);
+            
+            const obvMin = Math.min(...validObv);
+            const obvMax = Math.max(...validObv);
+            const priceMin = Math.min(...validPrice);
+            const priceMax = Math.max(...validPrice);
+
+            const divergence = [];
+            for (let i = 0; i < obvDates.length; i++) {
+              if (obvSmoothed[i] === null || priceSmoothed[i] === null) {
+                divergence.push(0);
+              } else {
+                // Map both to a 0-1 scale, then subtract and multiply by 100 for readability
+                const obvNorm = (obvSmoothed[i] - obvMin) / (obvMax - obvMin || 1);
+                const priceNorm = (priceSmoothed[i] - priceMin) / (priceMax - priceMin || 1);
+                divergence.push((obvNorm - priceNorm) * 100);
+              }
+            }
+
+            // Raw OBV (Thinner line, filled area)
+            const traceOBV = {
+              x: obvDates, y: obvY, name: 'OBV', type: 'scatter', mode: 'lines',
+              fill: 'tozeroy', fillcolor: selectedColorAlpha,
+              line: { color: selectedColorSolid, width: 1 },
+              xaxis: 'x1', yaxis: 'y1', hovertemplate: `<b>OBV:</b> %{y:.2s}<extra></extra>`
+            };
+
+            // Smoothed OBV (Thicker dashed line)
+            const traceOBVSmoothed = {
+              x: obvDates, y: obvSmoothed, name: 'OBV 5D MA', type: 'scatter', mode: 'lines',
+              line: { color: selectedColorSolid, width: 2.5, dash: 'dash' },
+              xaxis: 'x1', yaxis: 'y1', hovertemplate: `<b>OBV MA:</b> %{y:.2s}<extra></extra>`
+            };
+
+            // Raw Price (Lighter grey line)
+            const tracePrice = {
+              x: obvDates, y: priceY, name: 'ADJUSTED PRICE', type: 'scatter', mode: 'lines',
+              line: { color: '#9CA3AF', width: 1.5 },
+              xaxis: 'x1', yaxis: 'y2', hovertemplate: `<b>ADJ PRICE:</b> $%{y:.2f}<extra></extra>`
+            };
+
+            // Smoothed Price (Darker grey dashed line)
+            const tracePriceSmoothed = {
+              x: obvDates, y: priceSmoothed, name: 'ADJ PRICE 5D MA', type: 'scatter', mode: 'lines',
+              line: { color: '#374151', width: 2.5, dash: 'dash' },
+              xaxis: 'x1', yaxis: 'y2', hovertemplate: `<b>PRICE MA:</b> $%{y:.2f}<extra></extra>`
+            };
+
+            // Visual Divergence (Skinny Bottom Chart)
+            const traceDivergence = {
+              x: obvDates, y: divergence, name: 'TREND DIVERGENCE', type: 'scatter', mode: 'lines',
+              fill: 'tozeroy', fillcolor: 'rgba(156, 163, 175, 0.2)', // Light grey fill
+              line: { color: '#6B7280', width: 1.5 },
+              xaxis: 'x1', yaxis: 'y3', showlegend: false, hovertemplate: `<b>DIVERGENCE:</b> %{y:.1f} pts<extra></extra>`
+            };
+
+            const layoutOBV = {
+              ...commonLayout,
+              margin: { t: 10, r: 60, l: 60, b: 40 },
+              // Updated to match the dynamic zoom and range settings of the other charts
+              xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
+              
+              // Top Domain (Main Chart)
+              yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'ON-BALANCE VOLUME', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000' },
+              yaxis2: { domain: [0.25, 1], overlaying: 'y', side: 'right', showgrid: false, title: { text: 'ADJUSTED PRICE ($)', font: { color: '#374151' } }, tickfont: { color: '#374151' }, zeroline: false },
+              
+              // Bottom Domain (Skinny Divergence Chart)
+              yaxis3: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: 'DIVERGENCE', font: { size: 10 } }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
+              
+              hovermode: 'x unified',
+              legend: { orientation: 'h', y: 1.12, font: { size: 12 } },
+              barmode: 'group'
+            };
+
+            Plotly.newPlot('obv-chart', [tracePrice, tracePriceSmoothed, traceOBV, traceOBVSmoothed, traceDivergence], layoutOBV, { responsive: true, displayModeBar: false });
+
+          } catch(e) { console.error("Error rendering Chart 9 (OBV):", e); }
 
         }
 

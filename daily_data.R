@@ -34,13 +34,19 @@ price_data <- price_data |>
                ma_200 = SMA(adjusted, n = 200),
                vol_sma5   = SMA(volume, n = 5),
                log_vol    = log(vol_sma5),
-               vol_zscore = (log_vol - SMA(log_vol, n = 50)) / runSD(log_vol, n = 50)) |>
+               vol_zscore = (log_vol - SMA(log_vol, n = 50)) / runSD(log_vol, n = 50),
+               vwap_20        = VWAP(adjusted, volume, n = 20),
+               vwap_dev       = (adjusted / vwap_20) - 1,
+               amihud         = (abs(daily_return) * 100) / ((adjusted * volume) / 1e6),
+               illiquidity_20 = SMA(amihud, n = 20)) |>
         ungroup() |>
-        select(-vol_sma5, -log_vol)
+        select(-vol_sma5, -log_vol, -vwap_20, -amihud)
 
 price_data <- price_data |>
-        mutate(daily_return = round(daily_return, 4) * 100,
-               vol_zscore   = round(vol_zscore, 4),
+        mutate(daily_return   = round(daily_return, 4) * 100,
+               vol_zscore     = round(vol_zscore, 4),
+               vwap_dev       = round(vwap_dev * 100, 2),
+               illiquidity_20 = round(illiquidity_20, 2),
                across(c(adjusted, ma_20:ma_200), \(x) round(x, digits = 2)))
 
 wide_returns <- price_data |>

@@ -3,6 +3,70 @@
 library(tidyverse)
 library(tidyquant)
 library(jsonlite)
+library(mclust)
+
+# Custom function to compute rolling GMM for Volatility Regimes
+
+calculate_rolling_regime <- function(returns, window_size = 126) {
+        n <- length(returns)
+        
+        # Initialize empty vectors to hold our outputs
+        regime_out <- rep(NA_character_, n)
+        prob_out   <- rep(NA_real_, n)
+        
+        if (n < window_size) {
+                return(data.frame(regime = regime_out, high_vol_prob = prob_out))
+        }
+        
+        for (i in window_size:n) {
+                # Extract the trailing window of returns and scale by 100
+                window_data <- returns[(i - window_size + 1):i] * 100
+                
+                # Catch flat data arrays to prevent crashes
+                if (sd(window_data, na.rm = TRUE) == 0) next
+                
+                # Fit a 2-state Gaussian Mixture Model
+                # modelNames = "V" allows the two states to have Variable (different) variances
+                mod_fit <- tryCatch({
+                        Mclust(window_data, G = 2, modelNames = "V", verbose = FALSE)
+                }, error = function(e) NULL)
+                
+                # If the model fails to converge, skip to the next day
+                if (is.null(mod_fit) || is.null(mod_fit$parameters$variance$sigmasq)) next
+                
+                # Extract the variance (sigma squared) of the identified states
+                vars <- mod_fit$parameters$variance$sigmasq
+                
+                # Extract the probability that the LAST day (today) belongs to each state
+                # mod_fit$z is a matrix where columns are states and rows are days
+                today_probs <- mod_fit$z[nrow(mod_fit$z), ]
+                
+                # ====================================================
+                # LABEL-SWITCHING FIX
+                # Find which state has the larger variance
+                # ====================================================
+                if (length(vars) == 2) {
+                        if (vars[2] > vars[1]) {
+                                # State 2 is the volatile one
+                                prob_high <- today_probs[2]
+                        } else {
+                                # State 1 is the volatile one
+                                prob_high <- today_probs[1]
+                        }
+                } else {
+                        # Fallback if the model forces a 1-state solution (extremely rare)
+                        prob_high <- 0 
+                }
+                
+                # Assign outputs
+                prob_out[i] <- round(prob_high, 4)
+                regime_out[i] <- ifelse(prob_high > 0.5, "High Volatility", "Low Volatility")
+        }
+        
+        return(data.frame(regime = regime_out, high_vol_prob = prob_out))
+}
+
+# Data extraction and processing
 
 sagd_tickers <- c("ATH.TO", "CJ.TO", "SCR.TO")
 market_ticker <- c("XEG.TO")
@@ -39,6 +103,7 @@ price_data <- price_data |>
                vwap_dev       = (adjusted / vwap_20) - 1,
                amihud         = (abs(daily_return) * 100) / ((adjusted * volume) / 1e6),
                illiquidity_20 = SMA(amihud, n = 20)) |>
+        mutate(calculate_rolling_regime(daily_return, window_size = 126)) |>
         ungroup() |>
         select(-vol_sma5, -log_vol, -vwap_20, -amihud)
 

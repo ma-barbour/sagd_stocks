@@ -25,7 +25,7 @@ jobs:
 
       - name: Install R packages
         run: |
-          Rscript -e 'install.packages(c("tidyverse", "tidyquant", "jsonlite"))'
+          Rscript -e 'install.packages(c("tidyverse", "tidyquant", "jsonlite", "mclust"))'
           
       - name: Run data pipeline
         run: Rscript daily_data.R

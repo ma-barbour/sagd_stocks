@@ -88,11 +88,17 @@
         <p id="card-return" class="text-2xl font-bold mt-1">--</p>
       </div>
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">20-DAY MA</p>
-        <p id="card-ma20" class="text-2xl font-bold text-gray-900 mt-1">--</p>
+        <div class="flex items-center justify-center gap-2 mb-1">
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">20-DAY VWAP DEV</h3>
+          <span id="vwap-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
+        </div>
+        <p id="card-vwap" class="text-2xl font-bold text-gray-900 mt-1">--</p>
       </div>
       <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">PREDICTED PRICE</p>
+        <div class="flex items-center justify-center gap-2 mb-1">
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">PREDICTED PRICE</h3>
+          <span id="predicted-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
+        </div>
         <p id="card-predicted" class="text-2xl font-bold text-gray-900 mt-1">--</p>
       </div>
     </div>
@@ -166,6 +172,17 @@
           <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-vol-combined-subtitle"></p>
         </div>
         <div id="pca-vol-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
+      </div>
+
+      <!-- Bottom Liquidity Summary Cards -->
+      <div class="max-w-md mx-auto text-center">
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+          <div class="flex items-center justify-center gap-2 mb-1">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ILLIQUIDITY RATIO (20D AMIHUD)</h3>
+            <span id="illiq-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
+          </div>
+          <p id="card-illiq" class="text-2xl font-bold text-gray-900 mt-1">--</p>
+        </div>
       </div>
 
     </div>
@@ -442,7 +459,7 @@
             }
           }
 
-          // UPDATE METRIC CARDS
+          // UPDATE METRIC CARDS (Top Row)
           document.getElementById('card-price').innerText = `$${latest.adjusted?.toFixed(2) ?? '-'}`;
           const returnEl = document.getElementById('card-return');
           const retVal = latest.daily_return;
@@ -453,8 +470,60 @@
             returnEl.innerText = '--';
             returnEl.className = 'text-2xl font-bold mt-1 text-gray-900';
           }
-          document.getElementById('card-ma20').innerText = latest.ma_20 ? `$${latest.ma_20.toFixed(2)}` : '--';
+          
+          const vwapEl = document.getElementById('card-vwap');
+          const vwapTooltip = document.getElementById('vwap-tooltip');
+          const vwapVal = latest.vwap_dev;
+          if (vwapVal !== null && vwapVal !== undefined) {
+            vwapEl.innerText = `${vwapVal >= 0 ? '+' : ''}${vwapVal.toFixed(2)}%`;
+            vwapEl.className = `text-2xl font-bold mt-1 ${vwapVal >= 0 ? 'text-green-600' : 'text-red-600'}`;
+            const direction = vwapVal >= 0 ? 'above' : 'below';
+            vwapTooltip.title = `The current stock price is roughly ${Math.abs(vwapVal).toFixed(1)}% ${direction} the volume-weighted average price of the last 20 days.`;
+          } else {
+            vwapEl.innerText = '--';
+            vwapEl.className = 'text-2xl font-bold mt-1 text-gray-900';
+            vwapTooltip.title = 'Data unavailable';
+          }
+
+          // ... (VWAP block above remains the same) ...
+          
           document.getElementById('card-predicted').innerText = predictedPriceText;
+          
+          const predictedTooltip = document.getElementById('predicted-tooltip');
+          if (selectedSymbol === 'XEG') {
+            predictedTooltip.title = "Prediction not applicable for the sector benchmark.";
+          } else {
+            predictedTooltip.title = "Price predicted using 3-month PCA for SAGD-weighted market trend and stock-specific returns.";
+          }
+
+          // UPDATE METRIC CARDS (Bottom Row - Illiquidity)
+
+          // UPDATE METRIC CARDS (Bottom Row - Illiquidity)
+          const illiqEl = document.getElementById('card-illiq');
+          const illiqTooltip = document.getElementById('illiq-tooltip');
+          const illiqVal = latest.illiquidity_20;
+          
+          if (illiqVal !== null && illiqVal !== undefined) {
+            illiqEl.innerText = illiqVal.toFixed(2);
+            
+            let liqDesc = '';
+            let level = '';
+            if (illiqVal < 0.5) {
+              level = 'very low';
+              liqDesc = 'highly liquid and has a very deep order book';
+            } else if (illiqVal < 2.0) {
+              level = 'moderate';
+              liqDesc = 'moderately liquid and has an average order book';
+            } else {
+              level = 'high';
+              liqDesc = 'thinly traded and has a shallow order book, increasing execution risk';
+            }
+            
+            illiqTooltip.title = `A score of ${illiqVal.toFixed(2)} is ${level}, which means ${selectedSymbol} is ${liqDesc}.`;
+          } else {
+            illiqEl.innerText = '--';
+            illiqTooltip.title = 'Data unavailable';
+          }
 
 
           // 1. COMBINED "PRICE ACTION & DRAWDOWN" CHART

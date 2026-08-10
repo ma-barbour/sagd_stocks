@@ -974,7 +974,7 @@
 
                 const layoutCombinedPcaVol = {
                   ...commonLayout, 
-                  margin: { t: 10, r: 60, l: 60, b: 40 }, // Expanded right margin to prevent tick overlap
+                  margin: { t: 50, r: 60, l: 60, b: 40 }, // Expanded top margin (t: 50) and right margin (r: 60) for mobile legends and ticks
                   xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
                   // Primary Left Axes (Volume) - Colored by Ticker
                   yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'VOL (Z-SCORE)', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, range: rangeVol },
@@ -983,7 +983,7 @@
                   yaxis3: { domain: [0.25, 1], overlaying: 'y', side: 'right', showgrid: false, title: { text: 'INDEXED RETURN (BASE = 100)', font: { color: '#9CA3AF' } }, tickfont: { color: '#9CA3AF' }, zeroline: false, range: rangeRet },
                   yaxis4: { domain: [0, 0.18], overlaying: 'y2', side: 'right', showgrid: false, title: { text: 'ALPHA', font: { color: '#9CA3AF' } }, tickfont: { color: '#9CA3AF' }, zeroline: false, range: rangeRetAlpha },
                   hovermode: 'x unified', 
-                  legend: { orientation: 'h', y: 1.12, font: { size: 12 } },
+                  legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } },
                   barmode: 'group'
                 };
 
@@ -1018,83 +1018,48 @@
             const obvSmoothed = computeSMA(obvY, 5);
             const priceSmoothed = computeSMA(priceY, 5);
 
-            // Min-Max Normalization to calculate visual divergence
-            const validObv = obvSmoothed.filter(v => v !== null);
-            const validPrice = priceSmoothed.filter(v => v !== null);
-            
-            const obvMin = Math.min(...validObv);
-            const obvMax = Math.max(...validObv);
-            const priceMin = Math.min(...validPrice);
-            const priceMax = Math.max(...validPrice);
-
-            const divergence = [];
-            for (let i = 0; i < obvDates.length; i++) {
-              if (obvSmoothed[i] === null || priceSmoothed[i] === null) {
-                divergence.push(0);
-              } else {
-                // Map both to a 0-1 scale, then subtract and multiply by 100 for readability
-                const obvNorm = (obvSmoothed[i] - obvMin) / (obvMax - obvMin || 1);
-                const priceNorm = (priceSmoothed[i] - priceMin) / (priceMax - priceMin || 1);
-                divergence.push((obvNorm - priceNorm) * 100);
-              }
-            }
-
             // Raw OBV (Thinner line, filled area)
             const traceOBV = {
               x: obvDates, y: obvY, name: 'OBV', type: 'scatter', mode: 'lines',
               fill: 'tozeroy', fillcolor: selectedColorAlpha,
               line: { color: selectedColorSolid, width: 1 },
-              xaxis: 'x1', yaxis: 'y1', hovertemplate: `<b>OBV:</b> %{y:.2s}<extra></extra>`
+              yaxis: 'y1', hovertemplate: `<b>OBV:</b> %{y:.2s}<extra></extra>`
             };
 
             // Smoothed OBV (Thicker dashed line)
             const traceOBVSmoothed = {
               x: obvDates, y: obvSmoothed, name: 'OBV 5D MA', type: 'scatter', mode: 'lines',
               line: { color: selectedColorSolid, width: 2.5, dash: 'dash' },
-              xaxis: 'x1', yaxis: 'y1', hovertemplate: `<b>OBV MA:</b> %{y:.2s}<extra></extra>`
+              yaxis: 'y1', hovertemplate: `<b>OBV MA:</b> %{y:.2s}<extra></extra>`
             };
 
             // Raw Price (Lighter grey line)
             const tracePrice = {
               x: obvDates, y: priceY, name: 'ADJUSTED PRICE', type: 'scatter', mode: 'lines',
               line: { color: '#9CA3AF', width: 1.5 },
-              xaxis: 'x1', yaxis: 'y2', hovertemplate: `<b>ADJ PRICE:</b> $%{y:.2f}<extra></extra>`
+              yaxis: 'y2', hovertemplate: `<b>ADJ PRICE:</b> $%{y:.2f}<extra></extra>`
             };
 
             // Smoothed Price (Darker grey dashed line)
             const tracePriceSmoothed = {
               x: obvDates, y: priceSmoothed, name: 'ADJ PRICE 5D MA', type: 'scatter', mode: 'lines',
               line: { color: '#374151', width: 2.5, dash: 'dash' },
-              xaxis: 'x1', yaxis: 'y2', hovertemplate: `<b>PRICE MA:</b> $%{y:.2f}<extra></extra>`
-            };
-
-            // Visual Divergence (Skinny Bottom Chart)
-            const traceDivergence = {
-              x: obvDates, y: divergence, name: 'TREND DIVERGENCE', type: 'scatter', mode: 'lines',
-              fill: 'tozeroy', fillcolor: 'rgba(156, 163, 175, 0.2)', // Light grey fill
-              line: { color: '#6B7280', width: 1.5 },
-              xaxis: 'x1', yaxis: 'y3', showlegend: false, hovertemplate: `<b>DIVERGENCE:</b> %{y:.1f} pts<extra></extra>`
+              yaxis: 'y2', hovertemplate: `<b>PRICE MA:</b> $%{y:.2f}<extra></extra>`
             };
 
             const layoutOBV = {
               ...commonLayout,
-              margin: { t: 10, r: 60, l: 60, b: 40 },
-              // Updated to match the dynamic zoom and range settings of the other charts
+              // Expanded top margin (t: 50) to give the wrapping legend room to grow upward on mobile
+              margin: { t: 50, r: 60, l: 60, b: 40 },
               xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
-              
-              // Top Domain (Main Chart)
-              yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'ON-BALANCE VOLUME', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000' },
-              yaxis2: { domain: [0.25, 1], overlaying: 'y', side: 'right', showgrid: false, title: { text: 'ADJUSTED PRICE ($)', font: { color: '#374151' } }, tickfont: { color: '#374151' }, zeroline: false },
-              
-              // Bottom Domain (Skinny Divergence Chart)
-              yaxis3: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: 'DIVERGENCE', font: { size: 10 } }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
-              
+              yaxis: { gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'ON-BALANCE VOLUME', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000' },
+              yaxis2: { overlaying: 'y', side: 'right', showgrid: false, title: { text: 'ADJUSTED PRICE ($)', font: { color: '#374151' } }, tickfont: { color: '#374151' }, zeroline: false },
               hovermode: 'x unified',
-              legend: { orientation: 'h', y: 1.12, font: { size: 12 } },
-              barmode: 'group'
+              // Anchor legend to bottom edge above the plot area
+              legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } },
             };
 
-            Plotly.newPlot('obv-chart', [tracePrice, tracePriceSmoothed, traceOBV, traceOBVSmoothed, traceDivergence], layoutOBV, { responsive: true, displayModeBar: false });
+            Plotly.newPlot('obv-chart', [tracePrice, tracePriceSmoothed, traceOBV, traceOBVSmoothed], layoutOBV, { responsive: true, displayModeBar: false });
 
           } catch(e) { console.error("Error rendering Chart 9 (OBV):", e); }
 

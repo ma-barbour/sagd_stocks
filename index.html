@@ -549,14 +549,55 @@
             
             const maxDDDate = zoomedDates[maxDDIndex];
 
+            // ==========================================
+            // BUILD REGIME BACKGROUND SHAPES
+            // ==========================================
+            const regimeShapes = [];
+            let inHighVol = false;
+            let startVolDate = null;
+
+            for (let i = 0; i < zoomedData.length; i++) {
+              const d = zoomedData[i];
+              if (d.regime === 'High Volatility' && !inHighVol) {
+                inHighVol = true;
+                startVolDate = d.date;
+              } else if (d.regime !== 'High Volatility' && inHighVol) {
+                inHighVol = false;
+                regimeShapes.push({
+                  type: 'rect',
+                  xref: 'x2', yref: 'paper',
+                  x0: startVolDate, x1: d.date,
+                  y0: 0, y1: 1,
+                  fillcolor: 'rgba(255, 130, 0, 0.05)', 
+                  line: { width: 0 },
+                  layer: 'below'
+                });
+              }
+            }
+            // Close the shape if the regime is active on the very last day
+            if (inHighVol) {
+              regimeShapes.push({
+                type: 'rect', xref: 'x2', yref: 'paper',
+                x0: startVolDate, x1: maxDate,
+                y0: 0, y1: 1, fillcolor: 'rgba(255, 130, 0, 0.05)', line: { width: 0 }, layer: 'below'
+              });
+            }
+
+            // Create custom data for the tooltip (Regime and High Vol Probability)
+            const priceCustomData = zoomedData.map(d => [
+              d.regime ? d.regime.toUpperCase() : 'CALCULATING',
+              d.high_vol_prob !== null ? (d.high_vol_prob * 100).toFixed(1) : '--'
+            ]);
+
             const tracesPriceAction = [
               {
                 y: zoomedPrices, name: 'DISTRIBUTION', type: 'histogram', orientation: 'h', xaxis: 'x1', yaxis: 'y1',
                 marker: { color: selectedColorSolid, line: { color: '#ffffff', width: 1 } }, showlegend: false
               },
               {
-                x: zoomedDates, y: zoomedPrices, name: 'ADJUSTED PRICE', type: 'scatter', mode: 'lines',
-                xaxis: 'x2', yaxis: 'y1', line: { color: selectedColorSolid, width: 5, dash: 'solid' }
+                x: zoomedDates, y: zoomedPrices, customdata: priceCustomData, name: 'ADJUSTED PRICE', type: 'scatter', mode: 'lines',
+                xaxis: 'x2', yaxis: 'y1', line: { color: selectedColorSolid, width: 5, dash: 'solid' },
+                hovertemplate: '<b>PRICE:</b> $%{y:.2f}<br><b>REGIME:</b> %{customdata[0]} (%{customdata[1]}% PROB)<extra></extra>'
               },
               {
                 x: zoomedDates, y: zoomedData.map(d => d.ma_20), name: '20-DAY MA', type: 'scatter', mode: 'lines',
@@ -597,8 +638,10 @@
               yaxis3: { domain: [0.23, 0.38], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DRAWDOWN', titlefont: { size: 10 }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, ticksuffix: '%' },
               yaxis2: { domain: [0.00, 0.19], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'VOL', tickformat: '.2s', titlefont: { size: 10 } },
               hovermode: 'x unified', 
-              legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } }
+              legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } },
+              shapes: regimeShapes // Injects the red background shading
             };
+            
             Plotly.newPlot('price-chart', tracesPriceAction, layoutPriceAction, { responsive: true, displayModeBar: false });
           } catch(e) { console.error("Error rendering Chart 1:", e); }
 

@@ -158,7 +158,7 @@
           <h2 class="text-lg sm:text-xl font-bold text-gray-900">STOCK VS MARKET TREND (TRAILING 3-MONTH)</h2>
           <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">SAGD-WEIGHTED MARKET TREND (PC1) = 0</p>
         </div>
-        <div id="pca-cum-spread-chart" class="w-full h-[400px]"></div>
+        <div id="pca-cum-spread-chart" class="w-full h-[450px]"></div>
       </div>
 
       <!-- ========================================== -->
@@ -740,18 +740,39 @@
 
               if (zoomedZScores.length > 0) {
                 const yAxisName = index === 0 ? 'y' : `y${index + 1}`;
+                
+                // Base line traces (Left side)
                 spreadTraces.push({ x: zoomedMatchedDates, y: zoomedZScores, name: `VS ${peerSym}`, type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: tickerColors[peerSym]?.solid || '#6B7280', width: 3 } });
                 spreadTraces.push({ x: [startDate, maxDate], y: [0, 0], name: 'MEAN (0)', type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#000000', width: 1.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
                 spreadTraces.push({ x: [startDate, maxDate], y: [1.0, 1.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#CA8A04', width: 1.5, dash: 'dash' }, hoverinfo: 'skip', showlegend: false });
                 spreadTraces.push({ x: [startDate, maxDate], y: [-1.0, -1.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#CA8A04', width: 1.5, dash: 'dash' }, hoverinfo: 'skip', showlegend: false });
                 spreadTraces.push({ x: [startDate, maxDate], y: [2.0, 2.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#06B6D4', width: 1.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
                 spreadTraces.push({ x: [startDate, maxDate], y: [-2.0, -2.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#06B6D4', width: 1.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
+
+                // New Histogram Trace (Right side)
+                spreadTraces.push({
+                  y: zoomedZScores, type: 'histogram', orientation: 'h', xaxis: 'x2', yaxis: yAxisName,
+                  histnorm: 'probability density', showlegend: false, hoverinfo: 'skip',
+                  marker: { color: tickerColors[peerSym]?.alpha || 'rgba(107, 114, 128, 0.4)', line: { color: tickerColors[peerSym]?.solid || '#6B7280', width: 1 } }
+                });
+
+                // New Normal Distribution Curve (Right side)
+                const normY = []; const normX = [];
+                for(let v = -4; v <= 4; v += 0.1) {
+                  normY.push(v);
+                  normX.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * v * v));
+                }
+                spreadTraces.push({
+                  x: normX, y: normY, type: 'scatter', mode: 'lines', xaxis: 'x2', yaxis: yAxisName,
+                  line: { color: '#111827', dash: 'dot', width: 1.5 }, showlegend: false, hoverinfo: 'skip'
+                });
               }
             });
 
             const layoutSpread = {
               ...commonLayout, margin: { t: 10, r: 20, l: 60, b: 40 },
-              xaxis: { anchor: peerSymbols.length > 2 ? 'y3' : (peerSymbols.length > 1 ? 'y2' : 'y'), gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
+              xaxis: { domain: [0, 0.8], anchor: peerSymbols.length > 2 ? 'y3' : (peerSymbols.length > 1 ? 'y2' : 'y'), gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
+              xaxis2: { domain: [0.85, 1.0], anchor: peerSymbols.length > 2 ? 'y3' : (peerSymbols.length > 1 ? 'y2' : 'y'), showgrid: false, zeroline: false, showticklabels: false, linecolor: 'transparent' },
               yaxis:  { domain: [0.70, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: peerSymbols[0] || '', font: { size: 10 } } },
               yaxis2: { domain: [0.35, 0.65], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: peerSymbols[1] || '', font: { size: 10 } } },
               yaxis3: { domain: [0.00, 0.30], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: peerSymbols[2] || '', font: { size: 10 } } },
@@ -886,6 +907,27 @@
               const scoresData = appData.pca.scores;
               const spreadTraces = [];
               
+              // New PC1 Path Trace (Bottom Pane)
+              let cumPC1 = 0; const pc1Y = []; const pc1Dates = [];
+              scoresData.forEach(row => {
+                cumPC1 += row.PC1;
+                pc1Dates.push(row.date);
+                pc1Y.push(cumPC1);
+              });
+              
+              const offsetPC1 = pc1Y[0] || 0;
+              const pc1Spread = pc1Y.map(y => y - offsetPC1);
+              
+              spreadTraces.push({
+                x: pc1Dates, y: pc1Spread, name: 'MARKET TREND (PC1)',
+                type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: 'rgba(156, 163, 175, 0.2)',
+                yaxis: 'y2',
+                line: { color: '#9CA3AF', width: 2 },
+                hovertemplate: `<b>PC1 Trend:</b> %{y:.2f}<extra></extra>`,
+                showlegend: false
+              });
+              
+              // Existing Factor Drift Traces (Top Pane)
               ['PC2', 'PC3', 'PC4'].forEach(pc => {
                 if (!assignedFactors[pc]) return;
                 const { symbol, sign } = assignedFactors[pc];
@@ -910,8 +952,9 @@
 
               const layoutSpreadC = {
                 ...commonLayout, margin: { t: 10, r: 20, l: 60, b: 40 },
-                xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
-                yaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DIVERGENCE', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
+                xaxis: { anchor: 'y2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
+                yaxis: { domain: [0.25, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DIVERGENCE', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
+                yaxis2: { domain: [0.0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: 'PC1 PATH', font: { size: 10 } }, zeroline: true, zerolinecolor: '#000000' },
                 hovermode: 'x unified', legend: { orientation: 'h', y: 1.15, font: { size: 14 } }
               };
               Plotly.newPlot('pca-cum-spread-chart', spreadTraces, layoutSpreadC, { responsive: true, displayModeBar: false });

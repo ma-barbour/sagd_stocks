@@ -187,14 +187,11 @@
         <div id="oil-chart" class="w-full h-[550px] sm:h-[650px]"></div>
       </div>
 
-      <!-- Bottom Liquidity Summary Cards -->
-      <div class="max-w-md mx-auto text-center">
-        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-          <div class="flex items-center justify-center gap-2 mb-1">
-            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ILLIQUIDITY RATIO (20D AMIHUD)</h3>
-            <span id="illiq-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
-          </div>
-          <p id="card-illiq" class="text-2xl font-bold text-gray-900 mt-1">--</p>
+      <!-- Bottom Correlation Summary Cards -->
+      <div class="w-full">
+        <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-3 px-1 text-center">SAGD-WTI CORRELATIONS</h2>
+        <div id="correlation-cards-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
+          <!-- Dynamically injected via JS -->
         </div>
       </div>
 
@@ -332,6 +329,8 @@
         }
 
         const tickers = [...new Set(rawPrices.map(item => item.symbol))].sort();
+        const sagdTickers = tickers.filter(t => t !== 'XEG');
+
         const tickerSelect = document.getElementById('ticker-select');
         tickerSelect.innerHTML = tickers.map(t => `<option value="${t}">${t}</option>`).join('');
 
@@ -345,6 +344,33 @@
 
         const allDates = rawPrices.map(d => d.date).sort();
         const maxDate = allDates[allDates.length - 1] || '2026-12-31';
+
+        // Pre-build Correlation Cards HTML
+        const corrContainer = document.getElementById('correlation-cards-container');
+        if (corrContainer) {
+          corrContainer.innerHTML = sagdTickers.map(sym => `
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+              <div class="flex items-center justify-center gap-2 mb-2">
+                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">${sym} VS WTI</h3>
+                <span title="Pearson correlation of 3-day rolling returns over trailing windows." class="text-gray-400 cursor-help">ⓘ</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 divide-x divide-gray-200 mt-2">
+                <div>
+                  <p class="text-[10px] text-gray-500 font-bold">20-DAY</p>
+                  <p id="corr-${sym.toLowerCase()}-20" class="text-lg font-bold text-gray-900 mt-0.5">--</p>
+                </div>
+                <div>
+                  <p class="text-[10px] text-gray-500 font-bold">50-DAY</p>
+                  <p id="corr-${sym.toLowerCase()}-50" class="text-lg font-bold text-gray-900 mt-0.5">--</p>
+                </div>
+                <div>
+                  <p class="text-[10px] text-gray-500 font-bold">200-DAY</p>
+                  <p id="corr-${sym.toLowerCase()}-200" class="text-lg font-bold text-gray-900 mt-0.5">--</p>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
 
         function renderDashboard(selectedSymbol, startYear) {
           const startDate = `${startYear}-01-01`;
@@ -370,7 +396,7 @@
           if (appData.pca_volume && appData.pca_volume.variance_explained && appData.pca_volume.variance_explained['PC1']) {
             pc1VolVariance = (appData.pca_volume.variance_explained['PC1'] * 100).toFixed(1);
           }
-          document.getElementById('pca-vol-combined-subtitle').innerText = `STANDARDIZED VOLUME VS PREDICTED SAGD MARKET VOLUME (${pc1VolVariance}% VARIANCE)`;
+          document.getElementById('pca-vol-combined-subtitle').innerText = `STANDARDIZED VOLUME VS PREDICTED SAGD-WEIGHTED MARKET VOLUME (${pc1VolVariance}% VARIANCE)`;
 
           const tickerData = rawPrices
             .filter(d => d.symbol === selectedSymbol)
@@ -550,33 +576,61 @@
             predictedTooltip.title = "Price predicted using 3-month PCA for SAGD-weighted market trend and stock-specific returns.";
           }
 
-          // UPDATE METRIC CARDS (Bottom Row - Illiquidity)
-          const illiqEl = document.getElementById('card-illiq');
-          const illiqTooltip = document.getElementById('illiq-tooltip');
-          const illiqVal = latest.illiquidity_20;
-          
-          if (illiqVal !== null && illiqVal !== undefined) {
-            illiqEl.innerText = illiqVal.toFixed(2);
-            
-            let liqDesc = '';
-            let level = '';
-            if (illiqVal < 0.5) {
-              level = 'very low';
-              liqDesc = 'highly liquid and has a very deep order book';
-            } else if (illiqVal < 2.0) {
-              level = 'moderate';
-              liqDesc = 'moderately liquid and has an average order book';
-            } else {
-              level = 'high';
-              liqDesc = 'thinly traded and has a shallow order book, increasing execution risk';
-            }
-            
-            illiqTooltip.title = `A score of ${illiqVal.toFixed(2)} is ${level}, which means ${selectedSymbol} is ${liqDesc}.`;
-          } else {
-            illiqEl.innerText = '--';
-            illiqTooltip.title = 'Data unavailable';
+          // ==========================================
+          // UPDATE CORRELATION CARDS (3-DAY ROLLING)
+          // ==========================================
+          const oilMapForCorr = new Map();
+          if (appData.oil) {
+            appData.oil.forEach(d => {
+              const p = parseFloat(d.wti_front);
+              if (!isNaN(p)) oilMapForCorr.set(d.date, p);
+            });
           }
 
+          sagdTickers.forEach(sym => {
+            const symData = rawPrices
+              .filter(d => d.symbol === sym)
+              .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const wtiPrices = [];
+            const tickPrices = [];
+            
+            // Align dates using direct map lookup
+            symData.forEach(d => {
+              if (oilMapForCorr.has(d.date)) {
+                wtiPrices.push(oilMapForCorr.get(d.date));
+                tickPrices.push(d.adjusted);
+              }
+            });
+
+            const retWTI = [];
+            const retTick = [];
+            
+            // Generate robust 3-day rolling returns to absorb data mismatches
+            for (let i = 3; i < tickPrices.length; i++) {
+              retWTI.push((wtiPrices[i] - wtiPrices[i-3]) / wtiPrices[i-3]);
+              retTick.push((tickPrices[i] - tickPrices[i-3]) / tickPrices[i-3]);
+            }
+
+            const calcCorr = (window) => {
+              if (retWTI.length < window) return '--';
+              const wX = retWTI.slice(-window);
+              const wY = retTick.slice(-window);
+              return pearsonCorrelation(wX, wY).toFixed(2);
+            };
+
+            const corr20 = calcCorr(20);
+            const corr50 = calcCorr(50);
+            const corr200 = calcCorr(200);
+
+            const el20 = document.getElementById(`corr-${sym.toLowerCase()}-20`);
+            const el50 = document.getElementById(`corr-${sym.toLowerCase()}-50`);
+            const el200 = document.getElementById(`corr-${sym.toLowerCase()}-200`);
+            
+            if (el20) el20.innerText = corr20;
+            if (el50) el50.innerText = corr50;
+            if (el200) el200.innerText = corr200;
+          });
 
           // 1. COMBINED "PRICE ACTION & DRAWDOWN" CHART
           try {

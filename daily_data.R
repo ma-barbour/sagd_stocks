@@ -1,1330 +1,258 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SMID SAGD STOCKS</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Plotly.js CDN -->
-  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-  <style>
-    /* Force x-axis month labels to uppercase */
-    .xtick text {
-      text-transform: uppercase !important;
-    }
-  </style>
-</head>
-<body class="bg-white text-gray-900 min-h-screen p-4 sm:p-6 uppercase">
+#setwd("~/Investment/sagd_stocks")
 
-  <div class="max-w-7xl mx-auto space-y-6">
-    
-    <!-- Error / Diagnostic Banner (Hidden by default) -->
-    <div id="error-banner" class="hidden p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-semibold">
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span id="error-message">Unable to load app_data.json. If opening locally, please run a web server (e.g. `python -m http.server`).</span>
-      </div>
-    </div>
+library(tidyverse)
+library(tidyquant)
+library(jsonlite)
+library(mclust)
 
-    <!-- Header & Status Bar -->
-    <div class="bg-white p-4 sm:p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">SMID SAGD STOCKS</h1>
-      </div>
+# Custom function to compute rolling GMM for Volatility Regimes
 
-      <div class="flex flex-wrap items-center gap-3">
-        <!-- NA Warning Banner -->
-        <div id="na-warning" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-red-100 border border-red-400 text-red-700 text-xs font-bold animate-pulse">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          WARNING: MISSING DATA (NAS) DETECTED!
-        </div>
+calculate_rolling_regime <- function(returns, window_size = 126) {
+        n <- length(returns)
+        
+        # Initialize empty vectors to hold our outputs
+        regime_out <- rep(NA_character_, n)
+        prob_out   <- rep(NA_real_, n)
+        
+        if (n < window_size) {
+                return(data.frame(regime = regime_out, high_vol_prob = prob_out))
+        }
+        
+        for (i in window_size:n) {
+                # Extract the trailing window of returns and scale by 100
+                window_data <- returns[(i - window_size + 1):i] * 100
+                
+                # Catch flat data arrays to prevent crashes
+                if (sd(window_data, na.rm = TRUE) == 0) next
+                
+                # Fit a 2-state Gaussian Mixture Model
+                # modelNames = "V" allows the two states to have Variable (different) variances
+                mod_fit <- tryCatch({
+                        Mclust(window_data, G = 2, modelNames = "V", verbose = FALSE)
+                }, error = function(e) NULL)
+                
+                # If the model fails to converge, skip to the next day
+                if (is.null(mod_fit) || is.null(mod_fit$parameters$variance$sigmasq)) next
+                
+                # Extract the variance (sigma squared) of the identified states
+                vars <- mod_fit$parameters$variance$sigmasq
+                
+                # Extract the probability that the LAST day (today) belongs to each state
+                # mod_fit$z is a matrix where columns are states and rows are days
+                today_probs <- mod_fit$z[nrow(mod_fit$z), ]
 
-        <!-- Latest Data Date Indicator -->
-        <div class="bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300 text-xs text-gray-700">
-          <span class="text-gray-500 font-medium">LAST TRADING DAY:</span> 
-          <span id="last-date-display" class="font-bold text-gray-900 ml-1">--</span>
-        </div>
-      </div>
-    </div>
+                # Find which state has the larger variance
+                if (length(vars) == 2) {
+                        if (vars[2] > vars[1]) {
+                                # State 2 is the volatile one
+                                prob_high <- today_probs[2]
+                        } else {
+                                # State 1 is the volatile one
+                                prob_high <- today_probs[1]
+                        }
+                } else {
+                        # Fallback if the model forces a 1-state solution (extremely rare)
+                        prob_high <- 0 
+                }
+                
+                # Assign outputs
+                prob_out[i] <- round(prob_high, 4)
+                regime_out[i] <- ifelse(prob_high > 0.5, "High Volatility", "Low Volatility")
+        }
+        
+        return(data.frame(regime = regime_out, high_vol_prob = prob_out))
+}
 
-    <!-- Controls Bar -->
-    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
-        <!-- Ticker Selector -->
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label for="ticker-select" class="text-sm font-semibold text-gray-700 whitespace-nowrap">PRIMARY TICKER:</label>
-          <select id="ticker-select" class="bg-gray-50 text-gray-900 border border-gray-300 px-3 py-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto uppercase">
-            <!-- Populated via JS -->
-          </select>
-        </div>
+# Data extraction and processing
 
-        <!-- Dynamic Start Year Selector -->
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <label for="year-select" class="text-sm font-semibold text-gray-700 whitespace-nowrap">START YEAR:</label>
-          <select id="year-select" class="bg-gray-50 text-gray-900 border border-gray-300 px-3 py-2 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto uppercase">
-            <!-- Populated dynamically via JS -->
-          </select>
-        </div>
-      </div>
+sagd_tickers <- c("ATH.TO", "CJ.TO", "SCR.TO")
+market_ticker <- c("XEG.TO")
+oil_tickers <- c("CL=F", "CLM27.NYM")
+all_tickers <- c(sagd_tickers, market_ticker)
 
-      <div class="text-xs text-gray-500">
-        BENCHMARK: <span class="text-gray-800 font-semibold">XEG</span>
-      </div>
-    </div>
+# NETWORK RETRY LOOP (Max 3 Attempts, 1-Min Pause)
 
-    <!-- Summary Metrics Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-center">
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">LATEST PRICE</p>
-        <p id="card-price" class="text-2xl font-bold text-gray-900 mt-1">--</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">DAILY RETURN</p>
-        <p id="card-return" class="text-2xl font-bold mt-1">--</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <div class="flex items-center justify-center gap-2 mb-1">
-          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">20-DAY VWAP DEV</h3>
-          <span id="vwap-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
-        </div>
-        <p id="card-vwap" class="text-2xl font-bold text-gray-900 mt-1">--</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-        <div class="flex items-center justify-center gap-2 mb-1">
-          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">PREDICTED PRICE</h3>
-          <span id="predicted-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
-        </div>
-        <p id="card-predicted" class="text-2xl font-bold text-gray-900 mt-1">--</p>
-      </div>
-    </div>
+max_retries <- 3
+attempt <- 0
+sum_na <- 0
 
-    <!-- Full-Width Stacked Charts -->
-    <div class="space-y-6">
-      
-      <!-- 1. All-in-One PRICE ACTION Chart -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 id="price-chart-title" class="text-lg sm:text-xl font-bold text-gray-900">TOTAL RETURN</h2>
-        </div>
-        <div id="price-chart" class="w-full h-[600px] sm:h-[700px]"></div>
-      </div>
-
-      <!-- 2. Comparative Drawdowns -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <h2 id="comp-drawdown-chart-title" class="text-lg sm:text-xl font-bold text-gray-900 mb-3 px-1">COMPARATIVE DRAWDOWNS</h2>
-        <div id="comp-drawdown-chart" class="w-full h-[400px] sm:h-[500px]"></div>
-      </div>
-
-      <!-- 3. Relative Performance Comparison Chart -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <h2 id="relative-chart-title" class="text-lg sm:text-xl font-bold text-gray-900 mb-3 px-1">INDEXED PERFORMANCE VS PEERS AND BENCHMARK</h2>
-        <div id="relative-chart" class="w-full h-[400px] sm:h-[500px]"></div>
-      </div>
-
-      <!-- 4. Price Spread Z-Score vs Peers (Faceted) -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 id="spread-chart-title" class="text-lg sm:text-xl font-bold text-gray-900">PRICE SPREAD Z-SCORE (LOG-RATIO, 50-DAY ROLLING)</h2>
-          <p id="spread-chart-subtitle" class="text-sm font-semibold text-gray-500 mt-1 uppercase"></p>
-        </div>
-        <div id="spread-chart" class="w-full h-[600px]"></div>
-      </div>
-
-      <!-- 5. Combined PCA Regression Predictor & Alpha Spread (RETURNS) -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="pca-combined-title">PCA REGRESSION (TRAILING 3-MONTH)</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-combined-subtitle">ADJUSTED PRICE VS PREDICTED SAGD-WEIGHTED MARKET TREND</p>
-        </div>
-        <div id="pca-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
-      </div>
-
-      <!-- 6. Idiosyncratic Factor Loadings Facet Plot (RETURNS) -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900">IDIOSYNCRATIC PCA LOADINGS</h2>
-        </div>
-        <div id="pca-loadings-faceted-chart" class="w-full h-[350px]"></div>
-      </div>
-
-      <!-- 7. Cumulative Factor Spread (RETURNS) -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900">STOCK VS MARKET TREND (TRAILING 3-MONTH)</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">SAGD-WEIGHTED MARKET TREND (PC1) = 0</p>
-        </div>
-        <div id="pca-cum-spread-chart" class="w-full h-[450px]"></div>
-      </div>
-
-      <!-- 8. Combined PCA Regression Predictor & Alpha Spread (VOLUME OVERLAY) -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="pca-vol-combined-title">VOLUME PCA REGRESSION (TRAILING 3-MONTH)</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase" id="pca-vol-combined-subtitle"></p>
-        </div>
-        <div id="pca-vol-combined-chart" class="w-full h-[450px] sm:h-[550px]"></div>
-      </div>
-
-      <!-- 9. On-Balance Volume (CVD/OBV) -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900" id="obv-chart-title">ON-BALANCE VOLUME (OBV)</h2>
-          <p class="text-sm font-semibold text-gray-500 mt-1 uppercase">CUMULATIVE VOLUME DELTA OVERLAID WITH PRICE TREND</p>
-        </div>
-        <div id="obv-chart" class="w-full h-[400px]"></div>
-      </div>
-
-      <!-- 10. OIL PRICES VS SECTOR MARKET TRENDS -->
-      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm w-full">
-        <div class="mb-3 px-1">
-          <h2 class="text-lg sm:text-xl font-bold text-gray-900">OIL PRICES VS SAGD-WEIGHTED MARKET (TRAILING 3-MONTH)</h2>
-        </div>
-        <div id="oil-chart" class="w-full h-[550px] sm:h-[650px]"></div>
-      </div>
-
-      <!-- Bottom Liquidity Summary Cards -->
-      <div class="max-w-md mx-auto text-center">
-        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-          <div class="flex items-center justify-center gap-2 mb-1">
-            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">ILLIQUIDITY RATIO (20D AMIHUD)</h3>
-            <span id="illiq-tooltip" title="Calculating..." class="text-gray-400 cursor-help">ⓘ</span>
-          </div>
-          <p id="card-illiq" class="text-2xl font-bold text-gray-900 mt-1">--</p>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <script>
-    // Brand Colors
-    const tickerColors = {
-      'ATH': { solid: 'rgba(35, 59, 134, 1.0)', alpha: 'rgba(35, 59, 134, 0.4)' },
-      'CJ':  { solid: 'rgba(195, 32, 51, 1.0)', alpha: 'rgba(195, 32, 51, 0.4)' },
-      'SCR': { solid: 'rgba(51, 102, 51, 1.0)', alpha: 'rgba(51, 102, 51, 0.4)' },
-      'XEG': { solid: 'rgba(97, 97, 97, 1.0)', alpha: 'rgba(97, 97, 97, 0.4)' }
-    };
-
-    function getTickerColor(symbol, isSelected) {
-      const colorObj = tickerColors[symbol] || { solid: 'rgba(75, 85, 99, 1.0)', alpha: 'rgba(75, 85, 99, 0.4)' };
-      return isSelected ? colorObj.solid : colorObj.alpha;
-    }
-
-    const commonLayout = {
-      paper_bgcolor: '#ffffff', plot_bgcolor: '#ffffff',
-      font: { color: '#374151', family: 'sans-serif' },
-      margin: { t: 10, r: 20, l: 50, b: 40 }
-    };
-
-    // Math engine for Simple Moving Average (SMA)
-    function computeSMA(data, windowSize) {
-      const result = [];
-      for (let i = 0; i < data.length; i++) {
-        if (i < windowSize - 1) {
-          result.push(null);
+while(attempt <= max_retries) {
+        price_data <- tq_get(all_tickers, 
+                             get  = "stock.prices", 
+                             from = "2024-01-01") |>
+                mutate(symbol = str_remove(symbol, ".TO")) |>
+                select(date, symbol, volume, adjusted) |>
+                filter(date < Sys.Date())
+        
+        wide_prices <- price_data |>
+                select(date, symbol, adjusted) |> 
+                pivot_wider(names_from = symbol, values_from = adjusted)
+        
+        sum_na <- sum(is.na(wide_prices))
+        
+        if (sum_na == 0) {
+                break
         } else {
-          let sum = 0;
-          for (let j = 0; j < windowSize; j++) {
-            sum += data[i - j];
-          }
-          result.push(sum / windowSize);
+                if (attempt < max_retries) {
+                        message(paste("NAs found. Retrying in 60 seconds... (Attempt", attempt + 1, "of", max_retries, ")"))
+                        Sys.sleep(60)
+                }
+                attempt <- attempt + 1
         }
-      }
-      return result;
-    }
+}
 
-    // Math engine for standard 50-Day Rolling Log-Ratio Z-Score
-    function computeRollingLogZScore(targetLogs, peerLogs, windowSize = 50) {
-      const zScores = [];
-      const logSpreads = [];
-      if (!targetLogs || !peerLogs || targetLogs.length !== peerLogs.length) return zScores;
-      for (let i = 0; i < targetLogs.length; i++) {
-        logSpreads.push(targetLogs[i] - peerLogs[i]);
-      }
-      for (let i = 0; i < logSpreads.length; i++) {
-        if (i < windowSize - 1) { zScores.push(null); continue; }
-        let sum = 0;
-        for (let j = i - windowSize + 1; j <= i; j++) sum += logSpreads[j];
-        const mean = sum / windowSize;
-        let sumSq = 0;
-        for (let j = i - windowSize + 1; j <= i; j++) {
-          const diff = logSpreads[j] - mean;
-          sumSq += diff * diff;
+# Capture the boolean before applying imputation algorithms
+
+complete_check <- (sum_na == 0)
+date_check <- max(price_data$date)
+
+# IMPUTATION CASCADE (Average Peer Return -> Midpoint)
+
+if (sum_na > 0) {
+
+        wide_for_impute <- price_data |>
+                select(date, symbol, adjusted) |>
+                pivot_wider(names_from = symbol, values_from = adjusted) |>
+                arrange(date)
+        
+        symbols_to_fix <- unique(price_data$symbol)
+        
+        # 2. Rule A: Sequential Average Peer Return Imputation
+        for (i in 2:nrow(wide_for_impute)) {
+                # Calculate daily returns for available symbols on day i
+                day_returns <- numeric()
+                for (sym in symbols_to_fix) {
+                        if (!is.na(wide_for_impute[[sym]][i]) && !is.na(wide_for_impute[[sym]][i-1])) {
+                                day_returns <- c(day_returns, (wide_for_impute[[sym]][i] / wide_for_impute[[sym]][i-1]) - 1)
+                        }
+                }
+                
+                avg_ret <- mean(day_returns, na.rm = TRUE)
+                
+                # Apply average return to missing symbols
+                for (sym in symbols_to_fix) {
+                        if (is.na(wide_for_impute[[sym]][i]) && !is.na(wide_for_impute[[sym]][i-1]) && !is.nan(avg_ret)) {
+                                wide_for_impute[[sym]][i] <- wide_for_impute[[sym]][i-1] * (1 + avg_ret)
+                        }
+                }
         }
-        const sd = Math.sqrt(sumSq / windowSize) || 1e-9;
-        zScores.push((logSpreads[i] - mean) / sd);
-      }
-      return zScores;
-    }
-
-    // Robust Math Engine for Pearson Correlation (Prevents Catastrophic Cancellation)
-    function pearsonCorrelation(x, y) {
-      const n = x.length;
-      if (n === 0 || n !== y.length) return 0;
-
-      let sumX = 0, sumY = 0;
-      for (let i = 0; i < n; i++) {
-        sumX += x[i];
-        sumY += y[i];
-      }
-      const meanX = sumX / n;
-      const meanY = sumY / n;
-
-      let num = 0, denX = 0, denY = 0;
-      for (let i = 0; i < n; i++) {
-        const dx = x[i] - meanX;
-        const dy = y[i] - meanY;
-        num += dx * dy;
-        denX += dx * dx;
-        denY += dy * dy;
-      }
-
-      // 1e-10 catches microscopic floating-point zero variances
-      if (denX <= 1e-10 || denY <= 1e-10) return 0;
-
-      const corr = num / Math.sqrt(denX * denY);
-      return isNaN(corr) ? 0 : corr;
-    }
-
-    function showErrorMessage(msg) {
-      const banner = document.getElementById('error-banner');
-      const msgEl = document.getElementById('error-message');
-      if (banner && msgEl) {
-        msgEl.innerText = msg;
-        banner.classList.remove('hidden');
-      }
-    }
-
-    async function initApp() {
-      try {
-        const response = await fetch('app_data.json');
-        if (!response.ok) {
-          throw new Error(`HTTP Error ${response.status}: Unable to load app_data.json`);
-        }
-        const appData = await response.json();
-
-        const isComplete = appData.is_complete;
-        const lastDate = appData.last_date;
-        const rawPrices = (appData.prices || []).filter(d => d && d.date && d.symbol);
-
-        if (rawPrices.length === 0) {
-          showErrorMessage("No valid price data found in app_data.json");
-          return;
-        }
-
-        document.getElementById('last-date-display').innerText = lastDate ?? 'UNKNOWN';
-
-        if (!isComplete) {
-          const warningEl = document.getElementById('na-warning');
-          if (warningEl) {
-            warningEl.classList.remove('hidden');
-            warningEl.classList.add('flex');
-          }
-        }
-
-        const tickers = [...new Set(rawPrices.map(item => item.symbol))].sort();
-        const tickerSelect = document.getElementById('ticker-select');
-        tickerSelect.innerHTML = tickers.map(t => `<option value="${t}">${t}</option>`).join('');
-
-        const availableYears = [...new Set(rawPrices.map(d => d.date.substring(0, 4)))].sort();
-        const yearSelect = document.getElementById('year-select');
-        yearSelect.innerHTML = availableYears.map(y => `<option value="${y}">${y}</option>`).join('');
-
-        // Select the most recent year available
-        const defaultYear = availableYears[availableYears.length - 1] || new Date().getFullYear().toString();
-        yearSelect.value = defaultYear;
-
-        const allDates = rawPrices.map(d => d.date).sort();
-        const maxDate = allDates[allDates.length - 1] || '2026-12-31';
-
-        function renderDashboard(selectedSymbol, startYear) {
-          const startDate = `${startYear}-01-01`;
-          
-          document.getElementById('price-chart-title').innerText = `TOTAL RETURN: ${selectedSymbol}`;
-          document.getElementById('comp-drawdown-chart-title').innerText = `COMPARATIVE DRAWDOWNS`;
-          document.getElementById('relative-chart-title').innerText = `INDEXED PERFORMANCE VS PEERS AND BENCHMARK: ${selectedSymbol}`;
-          document.getElementById('spread-chart-title').innerText = `PRICE SPREAD Z-SCORE (LOG-RATIO, 50-DAY ROLLING): ${selectedSymbol}`;
-          document.getElementById('spread-chart-subtitle').innerText = `NEGATIVE Z-SCORE INDICATES A BELOW AVERAGE PRICE FOR ${selectedSymbol}`;
-          document.getElementById('obv-chart-title').innerText = `ON-BALANCE VOLUME (OBV): ${selectedSymbol}`;
-
-          // Updated PCA Combined Chart Text & Dynamic Variance (RETURNS)
-          document.getElementById('pca-combined-title').innerText = `PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
-          let pc1Variance = 0;
-          if (appData.pca && appData.pca.variance_explained && appData.pca.variance_explained['PC1']) {
-            pc1Variance = (appData.pca.variance_explained['PC1'] * 100).toFixed(1);
-          }
-          document.getElementById('pca-combined-subtitle').innerText = `ADJUSTED PRICE VS PREDICTED SAGD-WEIGHTED MARKET TREND (${pc1Variance}% VARIANCE)`;
-
-          // Updated PCA Combined Chart Text & Dynamic Variance (VOLUME)
-          document.getElementById('pca-vol-combined-title').innerText = `VOLUME PCA REGRESSION (TRAILING 3-MONTH): ${selectedSymbol}`;
-          let pc1VolVariance = 0;
-          if (appData.pca_volume && appData.pca_volume.variance_explained && appData.pca_volume.variance_explained['PC1']) {
-            pc1VolVariance = (appData.pca_volume.variance_explained['PC1'] * 100).toFixed(1);
-          }
-          document.getElementById('pca-vol-combined-subtitle').innerText = `STANDARDIZED VOLUME VS PREDICTED SAGD MARKET VOLUME (${pc1VolVariance}% VARIANCE)`;
-
-          const tickerData = rawPrices
-            .filter(d => d.symbol === selectedSymbol)
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-          if (tickerData.length === 0) return;
-
-          // ==========================================
-          // DYNAMIC FACTOR ASSIGNMENT & SIGN ORIENTATION
-          // ==========================================
-          const assignedFactors = {};
-          let pc1Sign = 1;
-
-          if (appData.pca && appData.pca.loadings) {
-            // Check PC1 loading sign relative to XEG / overall market to guarantee positive market direction
-            const xegLoading = appData.pca.loadings.find(l => l.symbol.toUpperCase() === 'XEG');
-            if (xegLoading && xegLoading.PC1 < 0) {
-              pc1Sign = -1;
-            } else {
-              const sumPC1 = appData.pca.loadings.reduce((acc, row) => acc + (row.PC1 || 0), 0);
-              if (sumPC1 < 0) pc1Sign = -1;
-            }
-
-            ['PC2', 'PC3', 'PC4'].forEach(pc => {
-              let maxAbs = -1;
-              let bestSym = '';
-              let sign = 1;
-              appData.pca.loadings.forEach(row => {
-                if (row.symbol.toUpperCase() !== 'XEG') {
-                  const val = row[pc];
-                  const absVal = Math.abs(val);
-                  if (absVal > maxAbs) {
-                    maxAbs = absVal;
-                    bestSym = row.symbol.toUpperCase();
-                    sign = val < 0 ? -1 : 1;
-                  }
-                }
-              });
-              if (bestSym) {
-                assignedFactors[pc] = { symbol: bestSym, sign: sign };
-              }
-            });
-          }
-
-          // Calculate Volume SMA over the full history before zooming
-          const allVolumes = tickerData.map(d => d.volume);
-          const allVolumeMA = computeSMA(allVolumes, 20);
-
-          const startIndex = tickerData.findIndex(d => d.date >= startDate);
-          const zoomedData = startIndex >= 0 ? tickerData.slice(startIndex) : [];
-          const zoomedVolumeMA = startIndex >= 0 ? allVolumeMA.slice(startIndex) : [];
-
-          const zoomedDates = zoomedData.map(d => d.date);
-          const zoomedPrices = zoomedData.map(d => d.adjusted);
-          const zoomedVolumes = zoomedData.map(d => d.volume);
-
-          const latest = tickerData[tickerData.length - 1];
-          
-          const selectedColorSolid = tickerColors[selectedSymbol]?.solid || '#4B5563';
-          const selectedColorAlpha = tickerColors[selectedSymbol]?.alpha || 'rgba(75, 85, 99, 0.2)';
-
-          // ==========================================
-          // CALCULATE PREDICTED PRICE (LM of PC1 + PC_k on Last Day)
-          // ==========================================
-          let predictedPriceText = '--';
-          if (selectedSymbol === 'XEG') {
-            predictedPriceText = 'NA';
-          } else if (appData.pca && appData.pca.scores) {
-            let myPC = null;
-            for (const pc in assignedFactors) {
-              if (assignedFactors[pc].symbol === selectedSymbol) {
-                myPC = pc;
-                break;
-              }
-            }
-
-            if (myPC) {
-              const scoresData = appData.pca.scores;
-              const pcaDates = [];
-              const targetRets = [];
-              const pc1Vals = [];
-              const pcKVals = [];
-
-              scoresData.forEach(row => {
-                const date = row.date;
-                const priceRow = rawPrices.find(p => p.symbol === selectedSymbol && p.date === date);
-                if (priceRow && priceRow.daily_return !== null && !isNaN(priceRow.daily_return)) {
-                  pcaDates.push(date);
-                  targetRets.push(priceRow.daily_return / 100);
-                  pc1Vals.push(row.PC1 * pc1Sign);
-                  pcKVals.push(row[myPC]);
-                }
-              });
-
-              if (pcaDates.length > 0) {
-                const n = pcaDates.length;
-                let sumY = 0, sumPC1 = 0, sumPCK = 0;
-                let sumPC1_sq = 0, sumPCK_sq = 0;
-                let sumY_PC1 = 0, sumY_PCK = 0;
-
-                for(let i=0; i<n; i++) {
-                  let y = targetRets[i];
-                  let p1 = pc1Vals[i];
-                  let pk = pcKVals[i];
-
-                  sumY += y;
-                  sumPC1 += p1;
-                  sumPCK += pk;
-                  sumPC1_sq += p1 * p1;
-                  sumPCK_sq += pk * pk;
-                  sumY_PC1 += y * p1;
-                  sumY_PCK += y * pk;
-                }
-
-                const meanY = sumY / n;
-                const meanPC1 = sumPC1 / n;
-                const meanPCK = sumPCK / n;
-
-                const varPC1 = (sumPC1_sq - n * meanPC1 * meanPC1) / (n - 1);
-                const varPCK = (sumPCK_sq - n * meanPCK * meanPCK) / (n - 1);
-                
-                const covY_PC1 = (sumY_PC1 - n * meanY * meanPC1) / (n - 1);
-                const covY_PCK = (sumY_PCK - n * meanY * meanPCK) / (n - 1);
-
-                const beta1 = covY_PC1 / varPC1;
-                const betaK = covY_PCK / varPCK;
-                
-                const alpha = meanY - (beta1 * meanPC1) - (betaK * meanPCK);
-
-                // Predict JUST the final day's return
-                const lastPredRet = alpha + (beta1 * pc1Vals[n-1]) + (betaK * pcKVals[n-1]);
-                
-                // Get yesterday's actual price
-                const yesterdayDate = pcaDates[n-2];
-                const yesterdayRow = tickerData.find(d => d.date === yesterdayDate);
-                // Fallback to backing out yesterday's price if lookup fails
-                const yesterdayPrice = yesterdayRow ? yesterdayRow.adjusted : (latest.adjusted / (1 + targetRets[n-1]));
-
-                // Apply today's predicted return to yesterday's actual price
-                const finalPredictedPrice = yesterdayPrice * (1 + lastPredRet);
-                predictedPriceText = `$${finalPredictedPrice.toFixed(2)}`;
-              }
-            }
-          }
-
-          // UPDATE METRIC CARDS (Top Row)
-          document.getElementById('card-price').innerText = `$${latest.adjusted?.toFixed(2) ?? '-'}`;
-          const returnEl = document.getElementById('card-return');
-          const retVal = latest.daily_return;
-          if (retVal !== null && retVal !== undefined) {
-            returnEl.innerText = `${retVal >= 0 ? '+' : ''}${retVal.toFixed(2)}%`;
-            returnEl.className = `text-2xl font-bold mt-1 ${retVal >= 0 ? 'text-green-600' : 'text-red-600'}`;
-          } else {
-            returnEl.innerText = '--';
-            returnEl.className = 'text-2xl font-bold mt-1 text-gray-900';
-          }
-          
-          const vwapEl = document.getElementById('card-vwap');
-          const vwapTooltip = document.getElementById('vwap-tooltip');
-          const vwapVal = latest.vwap_dev;
-          if (vwapVal !== null && vwapVal !== undefined) {
-            vwapEl.innerText = `${vwapVal >= 0 ? '+' : ''}${vwapVal.toFixed(2)}%`;
-            vwapEl.className = `text-2xl font-bold mt-1 ${vwapVal >= 0 ? 'text-green-600' : 'text-red-600'}`;
-            const direction = vwapVal >= 0 ? 'above' : 'below';
-            vwapTooltip.title = `The current stock price is roughly ${Math.abs(vwapVal).toFixed(1)}% ${direction} the volume-weighted average price of the last 20 days.`;
-          } else {
-            vwapEl.innerText = '--';
-            vwapEl.className = 'text-2xl font-bold mt-1 text-gray-900';
-            vwapTooltip.title = 'Data unavailable';
-          }
-
-          document.getElementById('card-predicted').innerText = predictedPriceText;
-          const predictedTooltip = document.getElementById('predicted-tooltip');
-          if (selectedSymbol === 'XEG') {
-            predictedTooltip.title = "Prediction not applicable for the sector benchmark.";
-          } else {
-            predictedTooltip.title = "Price predicted using 3-month PCA for SAGD-weighted market trend and stock-specific returns.";
-          }
-
-          // UPDATE METRIC CARDS (Bottom Row - Illiquidity)
-          const illiqEl = document.getElementById('card-illiq');
-          const illiqTooltip = document.getElementById('illiq-tooltip');
-          const illiqVal = latest.illiquidity_20;
-          
-          if (illiqVal !== null && illiqVal !== undefined) {
-            illiqEl.innerText = illiqVal.toFixed(2);
-            
-            let liqDesc = '';
-            let level = '';
-            if (illiqVal < 0.5) {
-              level = 'very low';
-              liqDesc = 'highly liquid and has a very deep order book';
-            } else if (illiqVal < 2.0) {
-              level = 'moderate';
-              liqDesc = 'moderately liquid and has an average order book';
-            } else {
-              level = 'high';
-              liqDesc = 'thinly traded and has a shallow order book, increasing execution risk';
-            }
-            
-            illiqTooltip.title = `A score of ${illiqVal.toFixed(2)} is ${level}, which means ${selectedSymbol} is ${liqDesc}.`;
-          } else {
-            illiqEl.innerText = '--';
-            illiqTooltip.title = 'Data unavailable';
-          }
-
-
-          // 1. COMBINED "PRICE ACTION & DRAWDOWN" CHART
-          try {
-            let singlePeak = 0;
-            let maxDDValue = 0;
-            let maxDDIndex = 0;
-            
-            const singleDrawdowns = zoomedPrices.map((p, i) => {
-              if (p > singlePeak) singlePeak = p;
-              const dd = singlePeak === 0 ? 0 : ((p - singlePeak) / singlePeak) * 100;
-              if (dd < maxDDValue) {
-                maxDDValue = dd;
-                maxDDIndex = i;
-              }
-              return dd;
-            });
-            
-            const maxDDDate = zoomedDates[maxDDIndex];
-
-            // BUILD REGIME BACKGROUND SHAPES
-            const regimeShapes = [];
-            let inHighVol = false;
-            let startVolDate = null;
-
-            for (let i = 0; i < zoomedData.length; i++) {
-              const d = zoomedData[i];
-              if (d.regime === 'High Volatility' && !inHighVol) {
-                inHighVol = true;
-                startVolDate = d.date;
-              } else if (d.regime !== 'High Volatility' && inHighVol) {
-                inHighVol = false;
-                regimeShapes.push({
-                  type: 'rect',
-                  xref: 'x2', yref: 'paper',
-                  x0: startVolDate, x1: d.date,
-                  y0: 0, y1: 1,
-                  fillcolor: 'rgba(255, 130, 0, 0.1)', 
-                  line: { width: 0 },
-                  layer: 'below'
-                });
-              }
-            }
-            if (inHighVol) {
-              regimeShapes.push({
-                type: 'rect', xref: 'x2', yref: 'paper',
-                x0: startVolDate, x1: maxDate,
-                y0: 0, y1: 1, fillcolor: 'rgba(255, 130, 0, 0.1)', line: { width: 0 }, layer: 'below'
-              });
-            }
-
-            const priceCustomData = zoomedData.map(d => [
-              d.regime ? d.regime.toUpperCase() : 'CALCULATING',
-              d.high_vol_prob !== null ? (d.high_vol_prob * 100).toFixed(1) : '--'
-            ]);
-
-            const tracesPriceAction = [
-              {
-                y: zoomedPrices, name: 'DISTRIBUTION', type: 'histogram', orientation: 'h', xaxis: 'x1', yaxis: 'y1',
-                marker: { color: selectedColorSolid, line: { color: '#ffffff', width: 1 } }, showlegend: false
-              },
-              {
-                x: zoomedDates, y: zoomedPrices, customdata: priceCustomData, name: 'ADJUSTED PRICE', type: 'scatter', mode: 'lines',
-                xaxis: 'x2', yaxis: 'y1', line: { color: selectedColorSolid, width: 5, dash: 'solid' },
-                hovertemplate: '<b>PRICE:</b> $%{y:.2f}<br><b>REGIME:</b> %{customdata[0]} (%{customdata[1]}% PROB)<extra></extra>'
-              },
-              {
-                x: zoomedDates, y: zoomedData.map(d => d.ma_20), name: '20-DAY MA', type: 'scatter', mode: 'lines',
-                xaxis: 'x2', yaxis: 'y1', line: { color: 'rgba(109, 205, 89, 0.9)', width: 2.5, dash: 'solid' }
-              },
-              {
-                x: zoomedDates, y: zoomedData.map(d => d.ma_50), name: '50-DAY MA', type: 'scatter', mode: 'lines',
-                xaxis: 'x2', yaxis: 'y1', line: { color: 'rgba(38, 130, 142, 0.9)', width: 2.5, dash: 'solid' }
-              },
-              {
-                x: zoomedDates, y: zoomedData.map(d => d.ma_200), name: '200-DAY MA', type: 'scatter', mode: 'lines',
-                xaxis: 'x2', yaxis: 'y1', line: { color: 'rgba(72, 40, 120, 0.9)', width: 2.5, dash: 'solid' }
-              },
-              {
-                x: zoomedDates, y: singleDrawdowns, name: 'DRAWDOWN', type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: selectedColorAlpha,
-                xaxis: 'x2', yaxis: 'y3', line: { color: selectedColorSolid, width: 2 }, showlegend: false, hovertemplate: '%{y:.2f}%<extra></extra>'
-              },
-              {
-                x: [maxDDDate], y: [maxDDValue], name: 'MAX DD', type: 'scatter', mode: 'markers',
-                xaxis: 'x2', yaxis: 'y3', marker: { color: '#ffffff', line: { color: selectedColorSolid, width: 3 }, size: 9 }, showlegend: false, hoverinfo: 'skip'
-              },
-              {
-                x: zoomedDates, y: zoomedVolumes, name: 'VOLUME', type: 'bar',
-                xaxis: 'x2', yaxis: 'y2', marker: { color: selectedColorAlpha }, showlegend: false
-              },
-              {
-                x: zoomedDates, y: zoomedVolumeMA, name: 'VOL 20D MA', type: 'scatter', mode: 'lines',
-                xaxis: 'x2', yaxis: 'y2', line: { color: 'rgba(0, 0, 0, 0.6)', width: 1.5, dash: 'solid' }, showlegend: false, hoverinfo: 'skip'
-              }
-            ];
-
-            const layoutPriceAction = {
-              ...commonLayout, 
-              margin: { t: 50, r: 20, l: 50, b: 40 },
-              xaxis: { domain: [0, 0.15], showgrid: false, zeroline: false, showticklabels: false, linecolor: '#e5e7eb' },
-              xaxis2: { domain: [0.18, 1], anchor: 'y2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
-              yaxis:  { domain: [0.42, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'ADJUSTED PRICE ($)' },
-              yaxis3: { domain: [0.23, 0.38], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DRAWDOWN', titlefont: { size: 10 }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, ticksuffix: '%' },
-              yaxis2: { domain: [0.00, 0.19], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'VOL', tickformat: '.2s', titlefont: { size: 10 } },
-              hovermode: 'x unified', 
-              legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } },
-              shapes: regimeShapes
-            };
-            
-            Plotly.newPlot('price-chart', tracesPriceAction, layoutPriceAction, { responsive: true, displayModeBar: false });
-          } catch(e) { console.error("Error rendering Chart 1:", e); }
-
-          // 2. CHART: COMPARATIVE DRAWDOWNS
-          try {
-            const xLabels = [], currentDD = [], maxDD = [], barColors = [];
-            const compAnnotations = [];
-            const orderedTickers = [...tickers].sort();
-
-            orderedTickers.forEach(sym => {
-              const symData = rawPrices.filter(d => d.symbol === sym && d.date >= startDate).sort((a, b) => new Date(a.date) - new Date(b.date));
-              if (symData.length === 0) return;
-              
-              let peak = 0;
-              let localMinDD = 0;
-              let localMinDDDate = symData[0].date;
-              
-              const ddowns = symData.map(d => {
-                if (d.adjusted > peak) peak = d.adjusted;
-                const dd = peak === 0 ? 0 : ((d.adjusted - peak) / peak) * 100;
-                if (dd < localMinDD) {
-                  localMinDD = dd;
-                  localMinDDDate = d.date;
-                }
-                return dd;
-              });
-
-              const lastDateStr = symData[symData.length - 1].date;
-              const daysSince = Math.floor((new Date(lastDateStr) - new Date(localMinDDDate)) / (1000 * 60 * 60 * 24));
-
-              xLabels.push(`<b>${sym.toUpperCase()}</b>`);
-              currentDD.push(ddowns[ddowns.length - 1] || 0);
-              maxDD.push(localMinDD || 0);
-              barColors.push(tickerColors[sym]?.solid || 'rgba(55, 65, 81, 1.0)');
-
-              compAnnotations.push({
-                x: `<b>${sym.toUpperCase()}</b>`,
-                y: localMinDD,
-                text: `${daysSince} DAYS`,
-                xanchor: 'center',
-                yanchor: 'top',
-                yshift: -8,
-                showarrow: false,
-                font: { size: 10, color: '#6B7280', weight: 'bold' }
-              });
-            });
-
-            const traceMax = { x: xLabels, y: maxDD, name: 'MAX DRAWDOWN', type: 'bar', marker: { color: 'rgba(243, 244, 246, 0.5)', line: { color: barColors, width: 2 } }, hovertemplate: 'Max: %{y:.2f}%<extra></extra>', showlegend: false };
-            const traceCurrent = { x: xLabels, y: currentDD, name: 'CURRENT DRAWDOWN', type: 'bar', marker: { color: barColors }, hovertemplate: 'Current: %{y:.2f}%<extra></extra>', showlegend: false };
-            const traceMaxLegend = { x: [], y: [], name: 'MAX DRAWDOWN', type: 'bar', marker: { color: 'rgba(243, 244, 246, 0.5)', line: { color: '#000000', width: 2 } }, showlegend: true };
-            const traceCurrentLegend = { x: [], y: [], name: 'CURRENT DRAWDOWN', type: 'bar', marker: { color: '#000000' }, showlegend: true };
-
-            const layoutCompDrawdown = { ...commonLayout, barmode: 'overlay', xaxis: { type: 'category', showgrid: false, linecolor: '#e5e7eb', tickfont: { size: 14, color: '#111827' } }, yaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DRAWDOWN', ticksuffix: '%' }, hovermode: 'x unified', legend: { orientation: 'h', y: 1.15, font: { size: 14 } }, annotations: compAnnotations };
-            Plotly.newPlot('comp-drawdown-chart', [traceMaxLegend, traceCurrentLegend, traceMax, traceCurrent], layoutCompDrawdown, { responsive: true, displayModeBar: false });
-          } catch(e) { console.error("Error rendering Chart 2:", e); }
-
-          // 3. CHART: RELATIVE PERFORMANCE
-          try {
-            const relativeTraces = tickers.map(sym => {
-              const symData = rawPrices.filter(d => d.symbol === sym && d.date >= startDate).sort((a, b) => new Date(a.date) - new Date(b.date));
-              if (symData.length === 0) return null;
-              const baseVal = symData[0].adjusted;
-              const indexedY = symData.map(d => (d.adjusted / baseVal) * 100);
-              const isSelected = sym === selectedSymbol;
-              return { x: symData.map(d => d.date), y: indexedY, name: sym.toUpperCase(), type: 'scatter', mode: 'lines', line: { color: getTickerColor(sym, isSelected), width: isSelected ? 4 : 1.5 } };
-            }).filter(Boolean);
-
-            const layoutRelative = { ...commonLayout, xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false }, yaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'INDEXED RETURN (BASE = 100)' }, hovermode: 'x unified', legend: { orientation: 'h', y: 1.15, font: { size: 14 } } };
-            Plotly.newPlot('relative-chart', relativeTraces, layoutRelative, { responsive: true, displayModeBar: false });
-          } catch(e) { console.error("Error rendering Chart 3:", e); }
-
-          // 4. CHART: FACETED PRICE SPREAD Z-SCORE
-          try {
-            const spreadTraces = [];
-            const peerSymbols = tickers.filter(t => t !== selectedSymbol);
-            const globalSelectedMap = new Map();
-            tickerData.forEach(d => globalSelectedMap.set(d.date, d.adjusted));
-            
-            peerSymbols.forEach((peerSym, index) => {
-              const peerData = rawPrices.filter(d => d.symbol === peerSym).sort((a, b) => new Date(a.date) - new Date(b.date));
-              const allMatchedDates = [], targetLogs = [], peerLogs = [];
-              peerData.forEach(d => {
-                if (globalSelectedMap.has(d.date) && d.adjusted > 0) {
-                  const targetPrice = globalSelectedMap.get(d.date);
-                  if (targetPrice > 0) {
-                    allMatchedDates.push(d.date); targetLogs.push(Math.log(targetPrice)); peerLogs.push(Math.log(d.adjusted));
-                  }
-                }
-              });
-
-              const allZScores = computeRollingLogZScore(targetLogs, peerLogs, 50);
-              const zoomedMatchedDates = [], zoomedZScores = [];
-              allMatchedDates.forEach((date, i) => {
-                if (date >= startDate && allZScores[i] !== null) { zoomedMatchedDates.push(date); zoomedZScores.push(allZScores[i]); }
-              });
-
-              if (zoomedZScores.length > 0) {
-                const yAxisName = index === 0 ? 'y' : `y${index + 1}`;
-                
-                spreadTraces.push({ x: zoomedMatchedDates, y: zoomedZScores, name: `VS ${peerSym}`, type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: tickerColors[peerSym]?.solid || '#6B7280', width: 3 } });
-                spreadTraces.push({ x: [startDate, maxDate], y: [0, 0], name: 'MEAN (0)', type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#000000', width: 1.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
-                spreadTraces.push({ x: [startDate, maxDate], y: [1.0, 1.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#CA8A04', width: 1.5, dash: 'dash' }, hoverinfo: 'skip', showlegend: false });
-                spreadTraces.push({ x: [startDate, maxDate], y: [-1.0, -1.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#CA8A04', width: 1.5, dash: 'dash' }, hoverinfo: 'skip', showlegend: false });
-                spreadTraces.push({ x: [startDate, maxDate], y: [2.0, 2.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#06B6D4', width: 1.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
-                spreadTraces.push({ x: [startDate, maxDate], y: [-2.0, -2.0], type: 'scatter', mode: 'lines', yaxis: yAxisName, line: { color: '#06B6D4', width: 1.5, dash: 'solid' }, hoverinfo: 'skip', showlegend: false });
-
-                spreadTraces.push({
-                  y: zoomedZScores, type: 'histogram', orientation: 'h', xaxis: 'x2', yaxis: yAxisName,
-                  histnorm: 'probability density', showlegend: false, hoverinfo: 'skip',
-                  marker: { color: tickerColors[peerSym]?.alpha || 'rgba(107, 114, 128, 0.4)', line: { color: tickerColors[peerSym]?.solid || '#6B7280', width: 1 } }
-                });
-
-                const normY = []; const normX = [];
-                for(let v = -4; v <= 4; v += 0.1) {
-                  normY.push(v);
-                  normX.push((1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * v * v));
-                }
-                spreadTraces.push({
-                  x: normX, y: normY, type: 'scatter', mode: 'lines', xaxis: 'x2', yaxis: yAxisName,
-                  line: { color: '#111827', dash: 'dot', width: 1.5 }, showlegend: false, hoverinfo: 'skip'
-                });
-              }
-            });
-
-            const layoutSpread = {
-              ...commonLayout, margin: { t: 10, r: 20, l: 60, b: 40 },
-              xaxis: { domain: [0, 0.8], anchor: peerSymbols.length > 2 ? 'y3' : (peerSymbols.length > 1 ? 'y2' : 'y'), gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
-              xaxis2: { domain: [0.85, 1.0], anchor: peerSymbols.length > 2 ? 'y3' : (peerSymbols.length > 1 ? 'y2' : 'y'), showgrid: false, zeroline: false, showticklabels: false, linecolor: 'transparent' },
-              yaxis:  { domain: [0.70, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: peerSymbols[0] || '', font: { size: 10 } } },
-              yaxis2: { domain: [0.35, 0.65], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: peerSymbols[1] || '', font: { size: 10 } } },
-              yaxis3: { domain: [0.00, 0.30], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: peerSymbols[2] || '', font: { size: 10 } } },
-              hovermode: 'x unified', showlegend: false
-            };
-            Plotly.newPlot('spread-chart', spreadTraces, layoutSpread, { responsive: true, displayModeBar: false });
-          } catch(e) { console.error("Error rendering Chart 4:", e); }
-
-          // 5. COMBINED PCA REGRESSION & ALPHA RESIDUAL (RETURNS)
-          if (appData.pca && appData.pca.scores) {
-            try {
-              const scoresData = appData.pca.scores;
-              const pcaDates = [];
-              const targetRets = [];
-              const pc1 = [];
-
-              scoresData.forEach(row => {
-                const date = row.date;
-                const priceRow = rawPrices.find(p => p.symbol === selectedSymbol && p.date === date);
-                if (priceRow && priceRow.daily_return !== null && !isNaN(priceRow.daily_return)) {
-                  pcaDates.push(date);
-                  targetRets.push(priceRow.daily_return / 100);
-                  pc1.push(row.PC1 * pc1Sign);
-                }
-              });
-
-              if (pcaDates.length > 0) {
-                const n = pcaDates.length;
-                let sumY = 0, sumPC1 = 0, sumPC1_sq = 0, sumY_PC1 = 0;
-
-                for(let i=0; i<n; i++) {
-                  let y = targetRets[i];
-                  let p1 = pc1[i];
-                  sumY += y; sumPC1 += p1; sumPC1_sq += p1 * p1; sumY_PC1 += y * p1;
-                }
-
-                const meanY = sumY / n; const meanPC1 = sumPC1 / n;
-                const covY_PC1 = (sumY_PC1 - n * meanY * meanPC1) / (n - 1);
-                const varPC1 = (sumPC1_sq - n * meanPC1 * meanPC1) / (n - 1);
-                const beta1 = covY_PC1 / varPC1;
-                const alpha = meanY - (beta1 * meanPC1);
-
-                const actualIndex = [100];
-                const predIndex = [100];
-                const alphaResidual = [0];
-
-                for(let i=0; i<n; i++) {
-                  let predRet = alpha + (beta1 * pc1[i]);
-                  if(i > 0) {
-                    let newAct = actualIndex[i-1] * (1 + targetRets[i]);
-                    let newPred = predIndex[i-1] * (1 + predRet);
-                    actualIndex.push(newAct);
-                    predIndex.push(newPred);
-                    alphaResidual.push(newAct - newPred);
-                  }
-                }
-
-                const traceActual = {
-                  x: pcaDates, y: actualIndex, name: selectedSymbol,
-                  type: 'scatter', mode: 'lines',
-                  xaxis: 'x1', yaxis: 'y1',
-                  line: { color: selectedColorSolid, width: 4 },
-                  hovertemplate: `<b>${selectedSymbol}:</b> %{y:.1f} pts<extra></extra>`
-                };
-                
-                const tracePredicted = {
-                  x: pcaDates, y: predIndex, name: `PC1`,
-                  type: 'scatter', mode: 'lines',
-                  xaxis: 'x1', yaxis: 'y1',
-                  line: { color: selectedColorSolid, width: 2, dash: 'dash' },
-                  hovertemplate: `<b>PC1:</b> %{y:.1f} pts<extra></extra>`
-                };
-
-                const traceAlpha = {
-                  x: pcaDates, y: alphaResidual, name: `ALPHA SPREAD`,
-                  type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: selectedColorAlpha,
-                  xaxis: 'x1', yaxis: 'y2',
-                  line: { color: selectedColorSolid, width: 1.5 }, showlegend: false,
-                  hovertemplate: `<b>ALPHA:</b> %{y:.1f} pts<extra></extra>`
-                };
-
-                const layoutCombinedPca = {
-                  ...commonLayout, 
-                  xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
-                  yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'INDEXED RETURN (BASE = 100)' },
-                  yaxis2: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'ALPHA', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
-                  hovermode: 'x unified', 
-                  legend: { orientation: 'h', y: 1.12, font: { size: 14 } },
-                  barmode: 'group'
-                };
-
-                Plotly.newPlot('pca-combined-chart', [tracePredicted, traceActual, traceAlpha], layoutCombinedPca, { responsive: true, displayModeBar: false });
-              }
-            } catch(e) { console.error("Error rendering Chart 6:", e); }
-          }
-
-          // 6. FACETED LOADINGS CHART (RETURNS)
-          if (appData.pca && appData.pca.loadings) {
-            try {
-              const loadings = appData.pca.loadings;
-              const symbols = loadings.map(d => d.symbol.toUpperCase());
-              const barColors = symbols.map(sym => tickerColors[sym]?.solid || '#4B5563');
-
-              const tracePC2 = { x: symbols, y: loadings.map(d => d.PC2), type: 'bar', xaxis: 'x1', yaxis: 'y1', marker: { color: barColors }, hovertemplate: '<b>%{x}</b><br>PC2 Loading: %{y:.3f}<extra></extra>' };
-              const tracePC3 = { x: symbols, y: loadings.map(d => d.PC3), type: 'bar', xaxis: 'x2', yaxis: 'y2', marker: { color: barColors }, hovertemplate: '<b>%{x}</b><br>PC3 Loading: %{y:.3f}<extra></extra>' };
-              const tracePC4 = { x: symbols, y: loadings.map(d => d.PC4), type: 'bar', xaxis: 'x3', yaxis: 'y3', marker: { color: barColors }, hovertemplate: '<b>%{x}</b><br>PC4 Loading: %{y:.3f}<extra></extra>' };
-
-              const layoutFacetedLoadings = {
-                ...commonLayout,
-                margin: { t: 60, r: 20, l: 20, b: 40 },
-                grid: { rows: 1, columns: 3, pattern: 'independent' },
-                xaxis:  { domain: [0, 0.25], linecolor: '#e5e7eb' },
-                yaxis:  { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', dtick: 0.2, range: [-1, 1] },
-                xaxis2: { domain: [0.375, 0.625], linecolor: '#e5e7eb' },
-                yaxis2: { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', matches: 'y', dtick: 0.2 },
-                xaxis3: { domain: [0.75, 1.0], linecolor: '#e5e7eb' },
-                yaxis3: { domain: [0, 1], gridcolor: '#f3f4f6', zeroline: true, zerolinecolor: '#000000', matches: 'y', dtick: 0.2 },
-                showlegend: false,
-                annotations: [
-                  { text: `<b>PC2 (${assignedFactors['PC2']?.symbol || ''})</b>`, xref: 'paper', yref: 'paper', x: 0.125, y: 1.15, xanchor: 'center', yanchor: 'bottom', showarrow: false, font: { size: 14, color: '#374151' } },
-                  { text: `<b>PC3 (${assignedFactors['PC3']?.symbol || ''})</b>`, xref: 'paper', yref: 'paper', x: 0.5, y: 1.15, xanchor: 'center', yanchor: 'bottom', showarrow: false, font: { size: 14, color: '#374151' } },
-                  { text: `<b>PC4 (${assignedFactors['PC4']?.symbol || ''})</b>`, xref: 'paper', yref: 'paper', x: 0.875, y: 1.15, xanchor: 'center', yanchor: 'bottom', showarrow: false, font: { size: 14, color: '#374151' } }
-                ]
-              };
-              Plotly.newPlot('pca-loadings-faceted-chart', [tracePC2, tracePC3, tracePC4], layoutFacetedLoadings, { responsive: true, displayModeBar: false });
-            } catch(e) { console.error("Error rendering Chart 7:", e); }
-          }
-
-          // 7. CUMULATIVE FACTOR SPREAD (RETURNS)
-          if (appData.pca && appData.pca.scores && Object.keys(assignedFactors).length > 0) {
-            try {
-              const scoresData = appData.pca.scores;
-              const spreadTraces = [];
-              
-              let cumPC1 = 0; const pc1Y = []; const pc1Dates = [];
-              scoresData.forEach(row => {
-                cumPC1 += (row.PC1 * pc1Sign);
-                pc1Dates.push(row.date);
-                pc1Y.push(cumPC1);
-              });
-              
-              const offsetPC1 = pc1Y[0] || 0;
-              const pc1Spread = pc1Y.map(y => y - offsetPC1);
-              
-              spreadTraces.push({
-                x: pc1Dates, y: pc1Spread, name: 'SAGD-WEIGHTED MARKET (PC1)',
-                type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: 'rgba(156, 163, 175, 0.2)',
-                yaxis: 'y2',
-                line: { color: '#9CA3AF', width: 2 },
-                hovertemplate: `<b>PC1 Trend:</b> %{y:.2f}<extra></extra>`,
-                showlegend: false
-              });
-              
-              ['PC2', 'PC3', 'PC4'].forEach(pc => {
-                if (!assignedFactors[pc]) return;
-                const { symbol, sign } = assignedFactors[pc];
-                let cumSpread = 0; const xDates = []; const rawY = [];
-                
-                scoresData.forEach(row => {
-                  const pc_k = row[pc] * sign; 
-                  cumSpread += pc_k;
-                  xDates.push(row.date); rawY.push(cumSpread);
-                });
-
-                const offset = rawY[0] || 0;
-                const ySpread = rawY.map(y => y - offset);
-
-                spreadTraces.push({
-                  x: xDates, y: ySpread, name: `${symbol} (${pc})`,
-                  type: 'scatter', mode: 'lines',
-                  line: { color: tickerColors[symbol]?.solid || '#4B5563', width: 3 },
-                  hovertemplate: `<b>${symbol} (${pc})</b><br>Factor Drift: %{y:.2f}<extra></extra>`
-                });
-              });
-
-              const layoutSpreadC = {
-                ...commonLayout, margin: { t: 10, r: 20, l: 60, b: 40 },
-                xaxis: { anchor: 'y2', gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
-                yaxis: { domain: [0.25, 1.0], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: 'DIVERGENCE', zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1 },
-                yaxis2: { domain: [0.0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: 'PC1 PATH', font: { size: 10 } }, zeroline: true, zerolinecolor: '#000000' },
-                hovermode: 'x unified', legend: { orientation: 'h', y: 1.15, font: { size: 14 } }
-              };
-              Plotly.newPlot('pca-cum-spread-chart', spreadTraces, layoutSpreadC, { responsive: true, displayModeBar: false });
-            } catch(e) { console.error("Error rendering Chart 8:", e); }
-          }
-
-          // 8. COMBINED PCA REGRESSION (VOLUME + RETURNS OVERLAY)
-          if (appData.pca_volume && appData.pca_volume.scores && appData.pca && appData.pca.scores) {
-            try {
-              const volScores = appData.pca_volume.scores;
-              const retScores = appData.pca.scores;
-              
-              const pcaDates = [];
-              const targetZ = [];
-              const volPC1 = [];
-              const targetRet = [];
-              const retPC1 = [];
-
-              volScores.forEach(vRow => {
-                const date = vRow.date;
-                const rRow = retScores.find(r => r.date === date);
-                const priceRow = rawPrices.find(p => p.symbol === selectedSymbol && p.date === date);
-                
-                if (priceRow && rRow && priceRow.vol_zscore !== null && priceRow.daily_return !== null) {
-                  pcaDates.push(date);
-                  targetZ.push(priceRow.vol_zscore);
-                  volPC1.push(vRow.PC1);
-                  targetRet.push(priceRow.daily_return / 100);
-                  retPC1.push(rRow.PC1 * pc1Sign);
-                }
-              });
-
-              if (pcaDates.length > 0) {
-                const n = pcaDates.length;
-                
-                let sumY_v = 0, sumP_v = 0, sumP2_v = 0, sumYP_v = 0;
-                let sumY_r = 0, sumP_r = 0, sumP2_r = 0, sumYP_r = 0;
-
-                for(let i=0; i<n; i++) {
-                  let yv = targetZ[i], pv = volPC1[i];
-                  sumY_v += yv; sumP_v += pv; sumP2_v += pv*pv; sumYP_v += yv*pv;
-                  
-                  let yr = targetRet[i], pr = retPC1[i];
-                  sumY_r += yr; sumP_r += pr; sumP2_r += pr*pr; sumYP_r += yr*pr;
-                }
-
-                const meanY_v = sumY_v/n, meanP_v = sumP_v/n;
-                const beta_v = ((sumYP_v - n*meanY_v*meanP_v)/(n-1)) / ((sumP2_v - n*meanP_v*meanP_v)/(n-1));
-                const alpha_v = meanY_v - beta_v*meanP_v;
-
-                const meanY_r = sumY_r/n, meanP_r = sumP_r/n;
-                const beta_r = ((sumYP_r - n*meanY_r*meanP_r)/(n-1)) / ((sumP2_r - n*meanP_r*meanP_r)/(n-1));
-                const alpha_r = meanY_r - beta_r*meanP_r;
-
-                const actualZ = [], predZ = [], volAlpha = [];
-                const actualIndex = [100], predIndex = [100], retAlpha = [0];
-
-                for(let i=0; i<n; i++) {
-                  let pZ = alpha_v + beta_v*volPC1[i];
-                  actualZ.push(targetZ[i]);
-                  predZ.push(pZ);
-                  volAlpha.push(targetZ[i] - pZ);
-
-                  let pR = alpha_r + beta_r*retPC1[i];
-                  if(i > 0) {
-                    let nA = actualIndex[i-1] * (1 + targetRet[i]);
-                    let nP = predIndex[i-1] * (1 + pR);
-                    actualIndex.push(nA);
-                    predIndex.push(nP);
-                    retAlpha.push(nA - nP);
-                  }
-                }
-
-                const maxVol = Math.max(...actualZ.map(Math.abs), ...predZ.map(Math.abs));
-                const maxRet = Math.max(...actualIndex.map(y => Math.abs(y - 100)), ...predIndex.map(y => Math.abs(y - 100)));
-                const rangeVol = [-maxVol * 1.1, maxVol * 1.1];
-                const rangeRet = [100 - maxRet * 1.1, 100 + maxRet * 1.1];
-
-                const maxVolAlpha = Math.max(...volAlpha.map(Math.abs));
-                const maxRetAlpha = Math.max(...retAlpha.map(Math.abs));
-                const rangeVolAlpha = [-maxVolAlpha * 1.1, maxVolAlpha * 1.1];
-                const rangeRetAlpha = [-maxRetAlpha * 1.1, maxRetAlpha * 1.1];
-
-                const traceRetActual = { x: pcaDates, y: actualIndex, name: `PRICE`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y3', line: { color: 'rgba(156, 163, 175, 0.4)', width: 2 }, hovertemplate: `<b>PRICE:</b> %{y:.1f} pts<extra></extra>` };
-                const traceRetPredicted = { x: pcaDates, y: predIndex, name: `PRICE PC1`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y3', line: { color: 'rgba(156, 163, 175, 0.4)', width: 1.5, dash: 'dash' }, hoverinfo: 'skip' };
-                const traceRetAlpha = { x: pcaDates, y: retAlpha, name: `PRICE ALPHA`, type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: 'rgba(156, 163, 175, 0.15)', xaxis: 'x1', yaxis: 'y4', line: { color: 'rgba(156, 163, 175, 0.3)', width: 1 }, showlegend: false, hovertemplate: `<b>PRICE ALPHA:</b> %{y:.1f} pts<extra></extra>` };
-
-                const traceVolActual = { x: pcaDates, y: actualZ, name: `VOL`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y1', line: { color: selectedColorSolid, width: 3 }, hovertemplate: `<b>VOL:</b> %{y:.2f} Z<extra></extra>` };
-                const traceVolPredicted = { x: pcaDates, y: predZ, name: `VOL PC1`, type: 'scatter', mode: 'lines', xaxis: 'x1', yaxis: 'y1', line: { color: selectedColorSolid, width: 2, dash: 'dash' }, hovertemplate: `<b>PRED VOL:</b> %{y:.2f} Z<extra></extra>` };
-                const traceVolAlpha = { x: pcaDates, y: volAlpha, name: `ABNORMAL VOL`, type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: selectedColorAlpha, xaxis: 'x1', yaxis: 'y2', line: { color: selectedColorSolid, width: 1.5 }, showlegend: false, hovertemplate: `<b>ABNORMAL VOL:</b> %{y:.2f} Z<extra></extra>` };
-
-                const layoutCombinedPcaVol = {
-                  ...commonLayout, 
-                  margin: { t: 50, r: 60, l: 60, b: 40 },
-                  xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', dtick: 'M1', autorange: true },
-                  yaxis: { domain: [0.25, 1], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'VOL (Z-SCORE)', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, range: rangeVol },
-                  yaxis2: { domain: [0, 0.18], gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'ABN VOL', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000', zerolinewidth: 1, range: rangeVolAlpha },
-                  yaxis3: { domain: [0.25, 1], overlaying: 'y', side: 'right', showgrid: false, title: { text: 'INDEXED RETURN (BASE = 100)', font: { color: '#9CA3AF' } }, tickfont: { color: '#9CA3AF' }, zeroline: false, range: rangeRet },
-                  yaxis4: { domain: [0, 0.18], overlaying: 'y2', side: 'right', showgrid: false, title: { text: 'ALPHA', font: { color: '#9CA3AF' } }, tickfont: { color: '#9CA3AF' }, zeroline: false, range: rangeRetAlpha },
-                  hovermode: 'x unified', 
-                  legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } },
-                  barmode: 'group'
-                };
-
-                Plotly.newPlot('pca-vol-combined-chart', [traceRetPredicted, traceRetActual, traceRetAlpha, traceVolPredicted, traceVolActual, traceVolAlpha], layoutCombinedPcaVol, { responsive: true, displayModeBar: false });
-              }
-            } catch(e) { console.error("Error rendering Chart 9:", e); }
-          }
-
-          // 9. ON-BALANCE VOLUME (OBV)
-          try {
-            let currentOBV = 0;
-            const obvY = [];
-            const obvDates = [];
-            const priceY = [];
-
-            zoomedData.forEach(d => {
-              obvDates.push(d.date);
-              priceY.push(d.adjusted);
-              
-              if (d.daily_return > 0) {
-                currentOBV += d.volume;
-              } else if (d.daily_return < 0) {
-                currentOBV -= d.volume;
-              }
-              obvY.push(currentOBV);
-            });
-
-            const obvSmoothed = computeSMA(obvY, 5);
-            const priceSmoothed = computeSMA(priceY, 5);
-
-            const traceOBV = {
-              x: obvDates, y: obvY, name: 'OBV', type: 'scatter', mode: 'lines',
-              fill: 'tozeroy', fillcolor: selectedColorAlpha,
-              line: { color: selectedColorSolid, width: 1 },
-              yaxis: 'y1', hovertemplate: `<b>OBV:</b> %{y:.2s}<extra></extra>`
-            };
-
-            const traceOBVSmoothed = {
-              x: obvDates, y: obvSmoothed, name: 'OBV 5D MA', type: 'scatter', mode: 'lines',
-              line: { color: selectedColorSolid, width: 2.5, dash: 'dash' },
-              yaxis: 'y1', hovertemplate: `<b>OBV MA:</b> %{y:.2s}<extra></extra>`
-            };
-
-            const tracePrice = {
-              x: obvDates, y: priceY, name: 'ADJUSTED PRICE', type: 'scatter', mode: 'lines',
-              line: { color: '#9CA3AF', width: 1.5 },
-              yaxis: 'y2', hovertemplate: `<b>ADJ PRICE:</b> $%{y:.2f}<extra></extra>`
-            };
-
-            const tracePriceSmoothed = {
-              x: obvDates, y: priceSmoothed, name: 'ADJ PRICE 5D MA', type: 'scatter', mode: 'lines',
-              line: { color: '#374151', width: 2.5, dash: 'dash' },
-              yaxis: 'y2', hovertemplate: `<b>PRICE MA:</b> $%{y:.2f}<extra></extra>`
-            };
-
-            const layoutOBV = {
-              ...commonLayout,
-              margin: { t: 50, r: 60, l: 60, b: 40 },
-              xaxis: { gridcolor: '#f3f4f6', linecolor: '#e5e7eb', tickformat: '%b %Y', hoverformat: '%Y-%m-%d', range: [startDate, maxDate], autorange: false },
-              yaxis: { gridcolor: '#f3f4f6', linecolor: selectedColorSolid, title: { text: 'ON-BALANCE VOLUME', font: { color: selectedColorSolid } }, tickfont: { color: selectedColorSolid }, zeroline: true, zerolinecolor: '#000000' },
-              yaxis2: { overlaying: 'y', side: 'right', showgrid: false, title: { text: 'ADJUSTED PRICE ($)', font: { color: '#374151' } }, tickfont: { color: '#374151' }, zeroline: false },
-              hovermode: 'x unified',
-              legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } },
-            };
-
-            Plotly.newPlot('obv-chart', [tracePrice, tracePriceSmoothed, traceOBV, traceOBVSmoothed], layoutOBV, { responsive: true, displayModeBar: false });
-
-          } catch(e) { console.error("Error rendering Chart 10:", e); }
-
-          // ==========================================
-          // 10. NEW CHART: OIL PRICES VS MARKET TRENDS
-          // ==========================================
-          try {
-            if (appData.oil && Array.isArray(appData.oil) && appData.oil.length > 0) {
-              
-              let pcaStartDate = startDate;
-              if (appData.pca && appData.pca.scores && appData.pca.scores.length > 0) {
-                const sortedPcaDates = appData.pca.scores.map(d => d.date).sort();
-                pcaStartDate = sortedPcaDates[0];
-              }
-
-              const plotStartDate = pcaStartDate > startDate ? pcaStartDate : startDate;
-
-              const oilDataFiltered = appData.oil
-                .filter(d => d.date >= plotStartDate)
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-              const oilDates = oilDataFiltered.map(d => d.date);
-              const wtiFront = oilDataFiltered.map(d => d.wti_front);
-              const wti12m = oilDataFiltered.map(d => d.wti_12m);
-
-              const pc1Traces = [];
-              const pc1Spread = [];
-              let pc1Dates = [];
-              if (appData.pca && appData.pca.scores) {
-                const pcaScores = appData.pca.scores.filter(d => d.date >= plotStartDate);
-                let cumPC1 = 0;
-                const pc1Raw = [];
-                
-                pcaScores.forEach(row => {
-                  cumPC1 += (row.PC1 * pc1Sign);
-                  pc1Dates.push(row.date);
-                  pc1Raw.push(cumPC1);
-                });
-
-                const pc1Offset = pc1Raw[0] || 0;
-                pc1Raw.forEach(v => pc1Spread.push(v - pc1Offset)); 
-
-                pc1Traces.push({
-                  x: pc1Dates, y: pc1Spread, name: 'SAGD-WEIGHTED MARKET (PC1)',
-                  type: 'scatter', mode: 'lines', yaxis: 'y2',
-                  line: { color: '#9333EA', width: 2.5 },
-                  hovertemplate: `<b>PC1 Path:</b> %{y:.2f}<extra></extra>`
-                });
-              }
-
-              // ==========================================
-              // XEG VS PC1 ALPHA SPREAD MATH (REGRESSION)
-              // ==========================================
-              
-              const xegPcaDates = [];
-              const xegTargetRets = [];
-              const xegPc1 = [];
-
-              if (appData.pca && appData.pca.scores) {
-                const pcaScores = appData.pca.scores.filter(d => d.date >= plotStartDate);
-                
-                pcaScores.forEach(row => {
-                  const date = row.date;
-                  const priceRow = rawPrices.find(p => p.symbol === 'XEG' && p.date === date);
-                  if (priceRow && priceRow.daily_return !== null && !isNaN(priceRow.daily_return)) {
-                    xegPcaDates.push(date);
-                    xegTargetRets.push(priceRow.daily_return / 100);
-                    xegPc1.push(row.PC1 * pc1Sign);
-                  }
-                });
-              }
-
-              const xegAlphaResidual = [];
-              if (xegPcaDates.length > 0) {
-                const nXeg = xegPcaDates.length;
-                let sumY = 0, sumPC1 = 0, sumPC1_sq = 0, sumY_PC1 = 0;
-
-                for(let i=0; i<nXeg; i++) {
-                  let y = xegTargetRets[i];
-                  let p1 = xegPc1[i];
-                  sumY += y; sumPC1 += p1; sumPC1_sq += p1 * p1; sumY_PC1 += y * p1;
-                }
-
-                const meanY = sumY / nXeg; 
-                const meanPC1 = sumPC1 / nXeg;
-                const covY_PC1 = (sumY_PC1 - nXeg * meanY * meanPC1) / (nXeg - 1);
-                const varPC1 = (sumPC1_sq - nXeg * meanPC1 * meanPC1) / (nXeg - 1);
-                const beta1 = covY_PC1 / varPC1;
-                const alpha = meanY - (beta1 * meanPC1);
-
-                const actualIndex = [100];
-                const predIndex = [100];
-                xegAlphaResidual.push(0);
-
-                for(let i=1; i<nXeg; i++) {
-                  let predRet = alpha + (beta1 * xegPc1[i]);
-                  let newAct = actualIndex[i-1] * (1 + xegTargetRets[i]);
-                  let newPred = predIndex[i-1] * (1 + predRet);
-                  actualIndex.push(newAct);
-                  predIndex.push(newPred);
-                  
-                  // Flipped calculation: Positive values show PC1 outperforming XEG
-                  xegAlphaResidual.push(newPred - newAct);
-                }
-              }
-
-              const traceDivergence = {
-                x: xegPcaDates, y: xegAlphaResidual, name: `PC1 ALPHA`,
-                type: 'scatter', mode: 'lines', fill: 'tozeroy', fillcolor: 'rgba(147, 51, 234, 0.2)',
-                yaxis: 'y3',
-                line: { color: '#9333EA', width: 1.5 }, showlegend: false,
-                hovertemplate: `<b>PC1 Alpha:</b> %{y:.1f} pts<extra></extra>`
-              };
-
-              const traceWTIFront = {
-                x: oilDates, y: wtiFront, name: 'WTI FRONT MONTH',
-                type: 'scatter', mode: 'lines', yaxis: 'y1',
-                line: { color: '#D97706', width: 2.5 },
-                hovertemplate: `<b>WTI Front:</b> $%{y:.2f}<extra></extra>`
-              };
-
-              const traceWTI12M = {
-                x: oilDates, y: wti12m, name: 'WTI 12-MONTH',
-                type: 'scatter', mode: 'lines', yaxis: 'y1',
-                line: { color: 'rgba(217, 119, 6, 0.3)', width: 2.5 },
-                hovertemplate: `<b>WTI 12M:</b> $%{y:.2f}<extra></extra>`
-              };
-
-              const layoutOil = {
-                ...commonLayout,
-                margin: { t: 50, r: 60, l: 60, b: 40 },
-                xaxis: { 
-                  anchor: 'y3',
-                  gridcolor: '#f3f4f6', 
-                  linecolor: '#e5e7eb', 
-                  tickformat: '%b %Y', 
-                  hoverformat: '%Y-%m-%d', 
-                  dtick: 'M1', 
-                  range: [plotStartDate, maxDate], 
-                  autorange: false 
-                },
-                yaxis: { domain: [0.25, 1.0], gridcolor: '#f3f4f6', linecolor: '#D97706', title: { text: 'WTI CRUDE ($/BBL)', font: { color: '#D97706' } }, tickfont: { color: '#D97706' }, zeroline: false },
-                yaxis2: { domain: [0.25, 1.0], overlaying: 'y', side: 'right', showgrid: false, title: { text: 'CUMULATIVE PC1 PATH', font: { color: '#9333EA' } }, tickfont: { color: '#9333EA' }, zeroline: true, zerolinecolor: '#e5e7eb' },
-                yaxis3: { domain: [0.0, 0.18], gridcolor: '#f3f4f6', linecolor: '#e5e7eb', title: { text: 'ALPHA VS XEG', font: { size: 10 } }, zeroline: true, zerolinecolor: '#000000' },
-                hovermode: 'x unified',
-                legend: { orientation: 'h', y: 1.02, yanchor: 'bottom', x: 0, xanchor: 'left', font: { size: 12 } }
-              };
-
-              Plotly.newPlot('oil-chart', [traceWTIFront, traceWTI12M, ...pc1Traces, traceDivergence], layoutOil, { responsive: true, displayModeBar: false });
-            }
-          } catch(e) { console.error("Error rendering Chart 11 (Oil vs Market):", e); }
-
-        }
-
-        tickerSelect.addEventListener('change', () => renderDashboard(tickerSelect.value, yearSelect.value));
-        yearSelect.addEventListener('change', () => renderDashboard(tickerSelect.value, yearSelect.value));
-
-        if (tickers.length > 0) {
-          renderDashboard(tickers[0], defaultYear);
-        }
-
-      } catch (err) {
-        console.error('Error in initApp:', err);
-        showErrorMessage(`Failed to initialize dashboard: ${err.message}`);
-      }
-    }
-
-    initApp();
-  </script>
-</body>
-</html>
+        
+        # 3. Rule B: Fallback to Linear Midpoint Interpolation (if peer average was NaN)
+        wide_for_impute <- wide_for_impute |>
+                mutate(across(-date, ~ zoo::na.approx(.x, na.rm = FALSE)))
+        
+        # 4. Rebuild cleanly filled price_data and interpolate missing volumes
+        price_data <- wide_for_impute |>
+                pivot_longer(-date, names_to = "symbol", values_to = "adjusted") |>
+                left_join(price_data |> select(date, symbol, volume), by = c("date", "symbol")) |>
+                group_by(symbol) |>
+                mutate(volume = zoo::na.approx(volume, na.rm = FALSE)) |>
+                ungroup()
+}
+
+
+oil_data <- tq_get(oil_tickers, 
+                   get  = "stock.prices", 
+                   from = "2024-01-01") |>
+        select(date, symbol, adjusted) |>
+        pivot_wider(names_from = symbol, values_from = adjusted) |>
+        rename(wti_front = `CL=F`, wti_12m = `CLM27.NYM`) |>
+        arrange(date)
+
+price_data <- price_data |>
+        group_by(symbol) |>
+        arrange(date) |>
+        mutate(daily_return = (adjusted / lag(adjusted)) - 1,
+               ma_20  = SMA(adjusted, n = 20),
+               ma_50  = SMA(adjusted, n = 50),
+               ma_200 = SMA(adjusted, n = 200),
+               vol_sma5   = SMA(volume, n = 5),
+               log_vol    = log(vol_sma5),
+               vol_zscore = (log_vol - SMA(log_vol, n = 50)) / runSD(log_vol, n = 50),
+               vwap_20        = VWAP(adjusted, volume, n = 20),
+               vwap_dev       = (adjusted / vwap_20) - 1,
+               amihud         = (abs(daily_return) * 100) / ((adjusted * volume) / 1e6),
+               illiquidity_20 = SMA(amihud, n = 20)) |>
+        mutate(calculate_rolling_regime(daily_return, window_size = 126)) |>
+        ungroup() |>
+        select(-vol_sma5, -log_vol, -vwap_20, -amihud)
+
+price_data <- price_data |>
+        mutate(daily_return   = round(daily_return, 4) * 100,
+               vol_zscore     = round(vol_zscore, 4),
+               vwap_dev       = round(vwap_dev * 100, 2),
+               illiquidity_20 = round(illiquidity_20, 2),
+               across(c(adjusted, ma_20:ma_200), \(x) round(x, digits = 2)))
+
+wide_returns <- price_data |>
+        select(date, symbol, daily_return) |>
+        pivot_wider(names_from = symbol, values_from = daily_return) |>
+        drop_na()
+
+pca_returns <- wide_returns |>
+        filter(date >= (max(date) - 90))
+
+pca_fit <- prcomp(pca_returns |> select(-date), center = TRUE, scale. = TRUE)
+
+pca_scores <- pca_returns |>
+        select(date) |>
+        bind_cols(as_tibble(pca_fit$x)) |>
+        mutate(across(where(is.numeric), \(x) round(x, 4)))
+
+pca_loadings <- as_tibble(pca_fit$rotation, rownames = "symbol") |>
+        mutate(across(where(is.numeric), \(x) round(x, 4)))
+
+if (sum(pca_loadings$PC1) < 0) {
+        
+        pca_scores$PC1   <- pca_scores$PC1 * -1
+        pca_loadings$PC1 <- pca_loadings$PC1 * -1
+        
+}
+
+pca_variance <- as.list(summary(pca_fit)$importance[2, ])
+
+pca_list <- list(scores = pca_scores,
+                 loadings = pca_loadings,
+                 variance_explained = pca_variance)
+
+wide_vol <- price_data |>
+        filter(symbol != "XEG") |> 
+        select(date, symbol, vol_zscore) |>
+        pivot_wider(names_from = symbol, values_from = vol_zscore) |>
+        drop_na()
+
+pca_vol_data <- wide_vol |>
+        filter(date >= (max(date) - 90))
+
+pca_vol_fit <- prcomp(pca_vol_data |> select(-date), center = TRUE, scale. = TRUE)
+
+pca_vol_scores <- pca_vol_data |>
+        select(date) |>
+        bind_cols(as_tibble(pca_vol_fit$x)) |>
+        mutate(across(where(is.numeric), \(x) round(x, 4)))
+
+pca_vol_loadings <- as_tibble(pca_vol_fit$rotation, rownames = "symbol") |>
+        mutate(across(where(is.numeric), \(x) round(x, 4)))
+
+if (sum(pca_vol_loadings$PC1) < 0) {
+        
+        pca_vol_scores$PC1   <- pca_vol_scores$PC1 * -1
+        pca_vol_loadings$PC1 <- pca_vol_loadings$PC1 * -1
+        
+}
+
+pca_vol_variance <- as.list(summary(pca_vol_fit)$importance[2, ])
+
+pca_vol_list <- list(scores = pca_vol_scores,
+                     loadings = pca_vol_loadings,
+                     variance_explained = pca_vol_variance)
+
+app_data <- list(is_complete = complete_check,
+                 sum_na = sum_na,
+                 last_date = date_check,
+                 prices = price_data,
+                 pca = pca_list,
+                 pca_volume = pca_vol_list,
+                 oil = oil_data) 
+
+write_json(app_data, "app_data.json", pretty = TRUE, auto_unbox = TRUE)

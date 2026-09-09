@@ -1,7 +1,7 @@
 {
   "is_complete": true,
   "sum_na": 0,
-  "last_date": "2026-09-04",
+  "last_date": "2026-09-08",
   "prices": [
     {
       "date": "2024-01-02",
@@ -3312,7 +3312,7 @@
       "symbol": "CJ",
       "volume": 476900,
       "adjusted": 5.88,
-      "daily_return": -0,
+      "daily_return": 0,
       "ma_20": 5.65,
       "ma_50": 5.48,
       "vol_zscore": 0.4086,
@@ -3460,7 +3460,7 @@
       "ma_20": 5.65,
       "ma_50": 5.51,
       "vol_zscore": 0.4511,
-      "vwap_dev": -1.99,
+      "vwap_dev": -2,
       "illiquidity_20": 0.24
     },
     {
@@ -5385,7 +5385,7 @@
       "vwap_dev": 1.12,
       "illiquidity_20": 0.42,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0963
+      "high_vol_prob": 0.096
     },
     {
       "date": "2024-06-28",
@@ -5441,7 +5441,7 @@
       "vwap_dev": 2.44,
       "illiquidity_20": 0.43,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1125
+      "high_vol_prob": 0.1121
     },
     {
       "date": "2024-07-02",
@@ -5497,7 +5497,7 @@
       "vwap_dev": 1.23,
       "illiquidity_20": 0.44,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1285
+      "high_vol_prob": 0.1281
     },
     {
       "date": "2024-07-03",
@@ -5553,7 +5553,7 @@
       "vwap_dev": 1.94,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0925
+      "high_vol_prob": 0.0923
     },
     {
       "date": "2024-07-04",
@@ -5609,7 +5609,7 @@
       "vwap_dev": 0.45,
       "illiquidity_20": 0.46,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1899
+      "high_vol_prob": 0.1911
     },
     {
       "date": "2024-07-05",
@@ -5665,7 +5665,7 @@
       "vwap_dev": 0.46,
       "illiquidity_20": 0.45,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0941
+      "high_vol_prob": 0.0938
     },
     {
       "date": "2024-07-08",
@@ -5721,7 +5721,7 @@
       "vwap_dev": -0.46,
       "illiquidity_20": 0.43,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1384
+      "high_vol_prob": 0.1378
     },
     {
       "date": "2024-07-09",
@@ -5777,7 +5777,7 @@
       "vwap_dev": 0.63,
       "illiquidity_20": 0.44,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1051
+      "high_vol_prob": 0.1059
     },
     {
       "date": "2024-07-10",
@@ -5833,7 +5833,7 @@
       "vwap_dev": 2.12,
       "illiquidity_20": 0.46,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1232
+      "high_vol_prob": 0.1227
     },
     {
       "date": "2024-07-11",
@@ -5889,7 +5889,7 @@
       "vwap_dev": 2.27,
       "illiquidity_20": 0.45,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0835
+      "high_vol_prob": 0.0831
     },
     {
       "date": "2024-07-12",
@@ -5945,7 +5945,7 @@
       "vwap_dev": 4.41,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3523
+      "high_vol_prob": 0.3522
     },
     {
       "date": "2024-07-15",
@@ -6001,7 +6001,7 @@
       "vwap_dev": 5.19,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1116
+      "high_vol_prob": 0.1118
     },
     {
       "date": "2024-07-16",
@@ -6057,7 +6057,7 @@
       "vwap_dev": 4.06,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1064
+      "high_vol_prob": 0.1066
     },
     {
       "date": "2024-07-17",
@@ -6113,7 +6113,7 @@
       "vwap_dev": 3.63,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0938
+      "high_vol_prob": 0.0941
     },
     {
       "date": "2024-07-18",
@@ -6169,7 +6169,7 @@
       "vwap_dev": 2.29,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.12
+      "high_vol_prob": 0.1204
     },
     {
       "date": "2024-07-19",
@@ -6225,7 +6225,7 @@
       "vwap_dev": 3.21,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1237
+      "high_vol_prob": 0.1241
     },
     {
       "date": "2024-07-22",
@@ -6239,7 +6239,7 @@
       "vwap_dev": 1.83,
       "illiquidity_20": 3.54,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4714
+      "high_vol_prob": 0.4715
     },
     {
       "date": "2024-07-22",
@@ -6281,7 +6281,7 @@
       "vwap_dev": 1.97,
       "illiquidity_20": 0.42,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1055
+      "high_vol_prob": 0.1057
     },
     {
       "date": "2024-07-23",
@@ -6337,7 +6337,7 @@
       "vwap_dev": 1.23,
       "illiquidity_20": 0.4,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0937
+      "high_vol_prob": 0.0936
     },
     {
       "date": "2024-07-24",
@@ -6393,7 +6393,7 @@
       "vwap_dev": 1.37,
       "illiquidity_20": 0.39,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0879
+      "high_vol_prob": 0.0877
     },
     {
       "date": "2024-07-25",
@@ -6561,7 +6561,7 @@
       "vwap_dev": 0.66,
       "illiquidity_20": 0.32,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1036
+      "high_vol_prob": 0.1043
     },
     {
       "date": "2024-07-30",
@@ -6617,7 +6617,7 @@
       "vwap_dev": 0.11,
       "illiquidity_20": 0.3,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1106
+      "high_vol_prob": 0.1114
     },
     {
       "date": "2024-07-31",
@@ -6673,7 +6673,7 @@
       "vwap_dev": -2.28,
       "illiquidity_20": 0.26,
       "regime": "High Volatility",
-      "high_vol_prob": 0.6927
+      "high_vol_prob": 0.6915
     },
     {
       "date": "2024-08-01",
@@ -6729,7 +6729,7 @@
       "vwap_dev": -3.38,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2708
+      "high_vol_prob": 0.2719
     },
     {
       "date": "2024-08-02",
@@ -6785,7 +6785,7 @@
       "vwap_dev": -2.24,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1569
+      "high_vol_prob": 0.1571
     },
     {
       "date": "2024-08-06",
@@ -7065,7 +7065,7 @@
       "vwap_dev": 1.02,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1332
+      "high_vol_prob": 0.1331
     },
     {
       "date": "2024-08-13",
@@ -7121,7 +7121,7 @@
       "vwap_dev": 1.97,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1368
+      "high_vol_prob": 0.1371
     },
     {
       "date": "2024-08-14",
@@ -7177,7 +7177,7 @@
       "vwap_dev": 3.92,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2855
+      "high_vol_prob": 0.2851
     },
     {
       "date": "2024-08-15",
@@ -7233,7 +7233,7 @@
       "vwap_dev": 1.5,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4804
+      "high_vol_prob": 0.481
     },
     {
       "date": "2024-08-16",
@@ -7289,7 +7289,7 @@
       "vwap_dev": 0.99,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1301
+      "high_vol_prob": 0.1302
     },
     {
       "date": "2024-08-19",
@@ -7345,7 +7345,7 @@
       "vwap_dev": -0.1,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1839
+      "high_vol_prob": 0.1824
     },
     {
       "date": "2024-08-20",
@@ -7401,7 +7401,7 @@
       "vwap_dev": -0.36,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.103
+      "high_vol_prob": 0.1026
     },
     {
       "date": "2024-08-21",
@@ -7457,7 +7457,7 @@
       "vwap_dev": 0.09,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0982
+      "high_vol_prob": 0.0978
     },
     {
       "date": "2024-08-22",
@@ -7513,7 +7513,7 @@
       "vwap_dev": 1.4,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1271
+      "high_vol_prob": 0.1268
     },
     {
       "date": "2024-08-23",
@@ -7569,7 +7569,7 @@
       "vwap_dev": 3.45,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2368
+      "high_vol_prob": 0.2379
     },
     {
       "date": "2024-08-26",
@@ -7625,7 +7625,7 @@
       "vwap_dev": 1.37,
       "illiquidity_20": 0.28,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3349
+      "high_vol_prob": 0.3327
     },
     {
       "date": "2024-08-27",
@@ -7681,7 +7681,7 @@
       "vwap_dev": 1.08,
       "illiquidity_20": 0.28,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1214
+      "high_vol_prob": 0.1217
     },
     {
       "date": "2024-08-28",
@@ -7737,7 +7737,7 @@
       "vwap_dev": 2.71,
       "illiquidity_20": 0.3,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1818
+      "high_vol_prob": 0.1824
     },
     {
       "date": "2024-08-29",
@@ -7751,7 +7751,7 @@
       "vwap_dev": 0.4,
       "illiquidity_20": 3.37,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2986
+      "high_vol_prob": 0.2987
     },
     {
       "date": "2024-08-29",
@@ -7793,7 +7793,7 @@
       "vwap_dev": 0.25,
       "illiquidity_20": 0.29,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4866
+      "high_vol_prob": 0.4865
     },
     {
       "date": "2024-08-30",
@@ -7849,7 +7849,7 @@
       "vwap_dev": -2.69,
       "illiquidity_20": 0.3,
       "regime": "High Volatility",
-      "high_vol_prob": 0.8824
+      "high_vol_prob": 0.8817
     },
     {
       "date": "2024-09-03",
@@ -7905,7 +7905,7 @@
       "vwap_dev": -3.8,
       "illiquidity_20": 0.31,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3313
+      "high_vol_prob": 0.332
     },
     {
       "date": "2024-09-04",
@@ -7933,7 +7933,7 @@
       "vwap_dev": -4.4,
       "illiquidity_20": 0.07,
       "regime": "High Volatility",
-      "high_vol_prob": 0.934
+      "high_vol_prob": 0.9341
     },
     {
       "date": "2024-09-05",
@@ -8129,7 +8129,7 @@
       "vwap_dev": -6.7,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3047
+      "high_vol_prob": 0.3046
     },
     {
       "date": "2024-09-10",
@@ -8185,7 +8185,7 @@
       "vwap_dev": -5.93,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2307
+      "high_vol_prob": 0.2322
     },
     {
       "date": "2024-09-11",
@@ -8241,7 +8241,7 @@
       "vwap_dev": -4.55,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2607
+      "high_vol_prob": 0.2606
     },
     {
       "date": "2024-09-12",
@@ -8325,7 +8325,7 @@
       "vwap_dev": -4.89,
       "illiquidity_20": 0.06,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3138
+      "high_vol_prob": 0.3137
     },
     {
       "date": "2024-09-16",
@@ -8353,7 +8353,7 @@
       "vwap_dev": -3.65,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2368
+      "high_vol_prob": 0.2366
     },
     {
       "date": "2024-09-16",
@@ -8409,7 +8409,7 @@
       "vwap_dev": -3.02,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2591
+      "high_vol_prob": 0.2583
     },
     {
       "date": "2024-09-17",
@@ -8633,7 +8633,7 @@
       "vwap_dev": -2.9,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2777
+      "high_vol_prob": 0.2776
     },
     {
       "date": "2024-09-23",
@@ -8689,7 +8689,7 @@
       "vwap_dev": -1.47,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2785
+      "high_vol_prob": 0.2767
     },
     {
       "date": "2024-09-24",
@@ -8717,7 +8717,7 @@
       "vwap_dev": 1.59,
       "illiquidity_20": 0.07,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3039
+      "high_vol_prob": 0.3038
     },
     {
       "date": "2024-09-25",
@@ -9025,7 +9025,7 @@
       "vwap_dev": 1.1,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2355
+      "high_vol_prob": 0.2354
     },
     {
       "date": "2024-10-02",
@@ -9039,7 +9039,7 @@
       "vwap_dev": -3.26,
       "illiquidity_20": 2.9,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4896
+      "high_vol_prob": 0.4895
     },
     {
       "date": "2024-10-02",
@@ -9081,7 +9081,7 @@
       "vwap_dev": 2.36,
       "illiquidity_20": 0.22,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2305
+      "high_vol_prob": 0.2304
     },
     {
       "date": "2024-10-03",
@@ -9193,7 +9193,7 @@
       "vwap_dev": 3.44,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1917
+      "high_vol_prob": 0.1916
     },
     {
       "date": "2024-10-07",
@@ -9305,7 +9305,7 @@
       "vwap_dev": 1.67,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1798
+      "high_vol_prob": 0.1797
     },
     {
       "date": "2024-10-09",
@@ -9361,7 +9361,7 @@
       "vwap_dev": 2.63,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2017
+      "high_vol_prob": 0.2016
     },
     {
       "date": "2024-10-10",
@@ -9531,7 +9531,7 @@
       "vwap_dev": -0.28,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3292
+      "high_vol_prob": 0.3272
     },
     {
       "date": "2024-10-16",
@@ -9591,7 +9591,7 @@
       "vwap_dev": 0.05,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.275
+      "high_vol_prob": 0.2755
     },
     {
       "date": "2024-10-17",
@@ -9651,7 +9651,7 @@
       "vwap_dev": 0.14,
       "illiquidity_20": 0.22,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2989
+      "high_vol_prob": 0.2991
     },
     {
       "date": "2024-10-18",
@@ -9711,7 +9711,7 @@
       "vwap_dev": 0.23,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2922
+      "high_vol_prob": 0.2925
     },
     {
       "date": "2024-10-21",
@@ -9771,7 +9771,7 @@
       "vwap_dev": 0.89,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3118
+      "high_vol_prob": 0.3101
     },
     {
       "date": "2024-10-22",
@@ -9831,7 +9831,7 @@
       "vwap_dev": -0.09,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3107
+      "high_vol_prob": 0.3112
     },
     {
       "date": "2024-10-23",
@@ -9891,7 +9891,7 @@
       "vwap_dev": 0.66,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2489
+      "high_vol_prob": 0.2491
     },
     {
       "date": "2024-10-24",
@@ -9951,7 +9951,7 @@
       "vwap_dev": 1.43,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2556
+      "high_vol_prob": 0.2557
     },
     {
       "date": "2024-10-25",
@@ -10041,7 +10041,7 @@
       "vwap_dev": -1.02,
       "illiquidity_20": 0.06,
       "regime": "High Volatility",
-      "high_vol_prob": 0.9519
+      "high_vol_prob": 0.952
     },
     {
       "date": "2024-10-29",
@@ -10191,7 +10191,7 @@
       "vwap_dev": -0.72,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.093
+      "high_vol_prob": 0.0929
     },
     {
       "date": "2024-10-31",
@@ -10461,7 +10461,7 @@
       "vwap_dev": 0.2,
       "illiquidity_20": 0.06,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3982
+      "high_vol_prob": 0.3983
     },
     {
       "date": "2024-11-07",
@@ -10551,7 +10551,7 @@
       "vwap_dev": -2.28,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3648
+      "high_vol_prob": 0.3647
     },
     {
       "date": "2024-11-08",
@@ -10671,7 +10671,7 @@
       "vwap_dev": -1.97,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0957
+      "high_vol_prob": 0.0956
     },
     {
       "date": "2024-11-12",
@@ -10851,7 +10851,7 @@
       "vwap_dev": 0.66,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1031
+      "high_vol_prob": 0.103
     },
     {
       "date": "2024-11-15",
@@ -11451,7 +11451,7 @@
       "vwap_dev": 2.02,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1243
+      "high_vol_prob": 0.1242
     },
     {
       "date": "2024-11-29",
@@ -11758,7 +11758,7 @@
       "symbol": "SCR",
       "volume": 34200,
       "adjusted": 20.78,
-      "daily_return": -4.34,
+      "daily_return": -4.35,
       "ma_20": 22.03,
       "ma_50": 20.55,
       "ma_200": 21.25,
@@ -12403,7 +12403,7 @@
       "symbol": "CJ",
       "volume": 550600,
       "adjusted": 5.37,
-      "daily_return": 2.46,
+      "daily_return": 2.45,
       "ma_20": 5.47,
       "ma_50": 5.47,
       "ma_200": 5.53,
@@ -13247,7 +13247,7 @@
       "vwap_dev": 4.31,
       "illiquidity_20": 0.34,
       "regime": "High Volatility",
-      "high_vol_prob": 0.7396
+      "high_vol_prob": 0.7397
     },
     {
       "date": "2025-01-15",
@@ -13547,7 +13547,7 @@
       "vwap_dev": -0.51,
       "illiquidity_20": 0.35,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2037
+      "high_vol_prob": 0.2038
     },
     {
       "date": "2025-01-22",
@@ -14567,7 +14567,7 @@
       "vwap_dev": -0.04,
       "illiquidity_20": 0.26,
       "regime": "High Volatility",
-      "high_vol_prob": 0.614
+      "high_vol_prob": 0.6139
     },
     {
       "date": "2025-02-14",
@@ -14897,7 +14897,7 @@
       "vwap_dev": -1.3,
       "illiquidity_20": 0.04,
       "regime": "High Volatility",
-      "high_vol_prob": 0.823
+      "high_vol_prob": 0.8231
     },
     {
       "date": "2025-02-25",
@@ -15437,7 +15437,7 @@
       "vwap_dev": -3.16,
       "illiquidity_20": 0.03,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3354
+      "high_vol_prob": 0.3353
     },
     {
       "date": "2025-03-10",
@@ -18197,7 +18197,7 @@
       "vwap_dev": 7.73,
       "illiquidity_20": 0.04,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0388
+      "high_vol_prob": 0.0389
     },
     {
       "date": "2025-05-14",
@@ -25057,7 +25057,7 @@
       "symbol": "CJ",
       "volume": 1373700,
       "adjusted": 7.43,
-      "daily_return": -0.87,
+      "daily_return": -0.88,
       "ma_20": 7.38,
       "ma_50": 7.13,
       "ma_200": 6.12,
@@ -28845,7 +28845,7 @@
       "vwap_dev": 6.35,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4284
+      "high_vol_prob": 0.4285
     },
     {
       "date": "2026-01-28",
@@ -29085,7 +29085,7 @@
       "vwap_dev": 3.15,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2558
+      "high_vol_prob": 0.2557
     },
     {
       "date": "2026-02-03",
@@ -29145,7 +29145,7 @@
       "vwap_dev": 5.89,
       "illiquidity_20": 0.2,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2139
+      "high_vol_prob": 0.2138
     },
     {
       "date": "2026-02-04",
@@ -29235,7 +29235,7 @@
       "vwap_dev": 4.39,
       "illiquidity_20": 0.02,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2651
+      "high_vol_prob": 0.265
     },
     {
       "date": "2026-02-06",
@@ -31305,7 +31305,7 @@
       "vwap_dev": 8.13,
       "illiquidity_20": 0.07,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1342
+      "high_vol_prob": 0.1341
     },
     {
       "date": "2026-03-27",
@@ -33180,7 +33180,7 @@
       "vwap_dev": 12.35,
       "illiquidity_20": 0.14,
       "regime": "High Volatility",
-      "high_vol_prob": 0.97
+      "high_vol_prob": 0.9679
     },
     {
       "date": "2026-05-12",
@@ -35055,7 +35055,7 @@
       "vwap_dev": -5.73,
       "illiquidity_20": 0.03,
       "regime": "High Volatility",
-      "high_vol_prob": 0.5363
+      "high_vol_prob": 0.5364
     },
     {
       "date": "2026-06-26",
@@ -35115,7 +35115,7 @@
       "vwap_dev": -5.6,
       "illiquidity_20": 0.03,
       "regime": "High Volatility",
-      "high_vol_prob": 0.7893
+      "high_vol_prob": 0.7894
     },
     {
       "date": "2026-06-29",
@@ -37996,894 +37996,941 @@
       "illiquidity_20": 0.03,
       "regime": "Low Volatility",
       "high_vol_prob": 0.4768
+    },
+    {
+      "date": "2026-09-08",
+      "symbol": "ATH",
+      "volume": 2280100,
+      "adjusted": 11.01,
+      "daily_return": 1.38,
+      "ma_20": 10.77,
+      "ma_50": 10.58,
+      "ma_200": 9.67,
+      "vol_zscore": -0.1161,
+      "vwap_dev": 2.04,
+      "illiquidity_20": 0.1,
+      "regime": "Low Volatility",
+      "high_vol_prob": 0.3597
+    },
+    {
+      "date": "2026-09-08",
+      "symbol": "CJ",
+      "volume": 1007300,
+      "adjusted": 11.98,
+      "daily_return": 0.67,
+      "ma_20": 11.81,
+      "ma_50": 11.25,
+      "ma_200": 10.32,
+      "vol_zscore": 0.2063,
+      "vwap_dev": 1,
+      "illiquidity_20": 0.13,
+      "regime": "Low Volatility",
+      "high_vol_prob": 0.3846
+    },
+    {
+      "date": "2026-09-08",
+      "symbol": "SCR",
+      "volume": 539600,
+      "adjusted": 44.31,
+      "daily_return": 2.78,
+      "ma_20": 43.33,
+      "ma_50": 41.16,
+      "ma_200": 36.76,
+      "vol_zscore": -0.8397,
+      "vwap_dev": 2.31,
+      "illiquidity_20": 0.13,
+      "regime": "High Volatility",
+      "high_vol_prob": 0.6547
+    },
+    {
+      "date": "2026-09-08",
+      "symbol": "XEG",
+      "volume": 1954800,
+      "adjusted": 28.78,
+      "daily_return": 0.88,
+      "ma_20": 28.29,
+      "ma_50": 26.85,
+      "ma_200": 24.22,
+      "vol_zscore": -0.1747,
+      "vwap_dev": 1.52,
+      "illiquidity_20": 0.03,
+      "regime": "Low Volatility",
+      "high_vol_prob": 0.165
     }
   ],
   "pca": {
     "scores": [
       {
-        "date": "2026-06-08",
-        "PC1": 1.5275,
-        "PC2": 0.7859,
-        "PC3": 0.2024,
-        "PC4": 0.6055
-      },
-      {
-        "date": "2026-06-09",
-        "PC1": -3.5357,
-        "PC2": 0.0717,
-        "PC3": 0.1924,
-        "PC4": -0.0328
-      },
-      {
         "date": "2026-06-10",
-        "PC1": 2.3401,
-        "PC2": -0.2734,
-        "PC3": -0.2835,
-        "PC4": -0.7516
+        "PC1": 2.3368,
+        "PC2": -0.1503,
+        "PC3": 0.2055,
+        "PC4": -0.785
       },
       {
         "date": "2026-06-11",
-        "PC1": -0.2173,
-        "PC2": 0.2835,
-        "PC3": 0.1873,
-        "PC4": 0.1609
+        "PC1": -0.2733,
+        "PC2": 0.2761,
+        "PC3": -0.189,
+        "PC4": 0.2276
       },
       {
         "date": "2026-06-12",
-        "PC1": -2.0328,
-        "PC2": -0.2105,
-        "PC3": 0.0355,
-        "PC4": 0.8865
+        "PC1": -2.1277,
+        "PC2": -0.296,
+        "PC3": 0.0868,
+        "PC4": 0.8807
       },
       {
         "date": "2026-06-15",
-        "PC1": -2.7185,
-        "PC2": -0.1835,
-        "PC3": 0.8282,
-        "PC4": -0.0206
+        "PC1": -2.832,
+        "PC2": -0.2438,
+        "PC3": -0.8433,
+        "PC4": 0.0655
       },
       {
         "date": "2026-06-16",
-        "PC1": -1.8391,
-        "PC2": -0.0677,
-        "PC3": -0.0132,
-        "PC4": -0.3718
+        "PC1": -1.9334,
+        "PC2": -0.0241,
+        "PC3": -0.0424,
+        "PC4": -0.3782
       },
       {
         "date": "2026-06-17",
-        "PC1": -1.2078,
-        "PC2": 0.1083,
-        "PC3": 0.2708,
-        "PC4": -0.2611
+        "PC1": -1.2875,
+        "PC2": 0.1267,
+        "PC3": -0.3236,
+        "PC4": -0.2099
       },
       {
         "date": "2026-06-18",
-        "PC1": -1.8549,
-        "PC2": 0.3552,
-        "PC3": 0.4294,
-        "PC4": -0.0411
+        "PC1": -1.9478,
+        "PC2": 0.3404,
+        "PC3": -0.4712,
+        "PC4": 0.0502
       },
       {
         "date": "2026-06-19",
-        "PC1": 1.3685,
-        "PC2": 0.1409,
-        "PC3": -0.0502,
-        "PC4": -0.4543
+        "PC1": 1.3454,
+        "PC2": 0.2184,
+        "PC3": -0.0183,
+        "PC4": -0.4243
       },
       {
         "date": "2026-06-22",
-        "PC1": 0.4004,
-        "PC2": -0.4574,
-        "PC3": 0.1702,
-        "PC4": 0.3824
+        "PC1": 0.3571,
+        "PC2": -0.4928,
+        "PC3": -0.0956,
+        "PC4": 0.3842
       },
       {
         "date": "2026-06-23",
-        "PC1": 0.4607,
-        "PC2": 0.0497,
-        "PC3": 0.0741,
-        "PC4": -0.2121
+        "PC1": 0.418,
+        "PC2": 0.0874,
+        "PC3": -0.1089,
+        "PC4": -0.1794
       },
       {
         "date": "2026-06-24",
-        "PC1": -4.2506,
-        "PC2": 0.7409,
-        "PC3": -0.9898,
-        "PC4": 0.1346
+        "PC1": -4.3939,
+        "PC2": 0.8057,
+        "PC3": 0.9602,
+        "PC4": 0.0658
       },
       {
         "date": "2026-06-25",
-        "PC1": 0.8406,
-        "PC2": 0.614,
-        "PC3": 0.0061,
-        "PC4": -0.2436
+        "PC1": 0.8076,
+        "PC2": 0.671,
+        "PC3": -0.0765,
+        "PC4": -0.1648
       },
       {
         "date": "2026-06-26",
-        "PC1": -0.0317,
-        "PC2": 0.5214,
-        "PC3": -0.2074,
-        "PC4": -0.2007
+        "PC1": -0.0839,
+        "PC2": 0.5833,
+        "PC3": 0.1483,
+        "PC4": -0.1634
       },
       {
         "date": "2026-06-29",
-        "PC1": -0.211,
-        "PC2": 0.0049,
-        "PC3": 0.1934,
-        "PC4": 0.0593
+        "PC1": -0.2678,
+        "PC2": 0.0026,
+        "PC3": -0.1924,
+        "PC4": 0.1004
       },
       {
         "date": "2026-06-30",
-        "PC1": -0.1646,
-        "PC2": 0.6018,
-        "PC3": 0.0909,
-        "PC4": 0.1151
+        "PC1": -0.2188,
+        "PC2": 0.6114,
+        "PC3": -0.1163,
+        "PC4": 0.1991
       },
       {
         "date": "2026-07-02",
-        "PC1": -0.3301,
-        "PC2": -0.4743,
-        "PC3": 0.1497,
-        "PC4": 0.4983
+        "PC1": -0.3893,
+        "PC2": -0.5242,
+        "PC3": -0.0604,
+        "PC4": 0.4916
       },
       {
         "date": "2026-07-03",
-        "PC1": 0.6785,
-        "PC2": 0.5254,
-        "PC3": 0.0316,
-        "PC4": 0.0979
+        "PC1": 0.6427,
+        "PC2": 0.5451,
+        "PC3": -0.0513,
+        "PC4": 0.173
       },
       {
         "date": "2026-07-06",
-        "PC1": -2.7207,
-        "PC2": -1.2789,
-        "PC3": 0.2369,
-        "PC4": 0.3822
+        "PC1": -2.8351,
+        "PC2": -1.3515,
+        "PC3": -0.1244,
+        "PC4": 0.2945
       },
       {
         "date": "2026-07-07",
-        "PC1": 2.7622,
-        "PC2": -0.1461,
-        "PC3": 0.001,
-        "PC4": 0.3044
+        "PC1": 2.7717,
+        "PC2": -0.1418,
+        "PC3": 0.0542,
+        "PC4": 0.3294
       },
       {
         "date": "2026-07-08",
-        "PC1": 3.2144,
-        "PC2": -0.2345,
-        "PC3": 0.0764,
-        "PC4": 0.6225
+        "PC1": 3.2346,
+        "PC2": -0.2652,
+        "PC3": 0.0277,
+        "PC4": 0.6543
       },
       {
         "date": "2026-07-09",
-        "PC1": -1.8308,
-        "PC2": -0.688,
-        "PC3": 0.0401,
-        "PC4": -0.214
+        "PC1": -1.9258,
+        "PC2": -0.6734,
+        "PC3": -0.0382,
+        "PC4": -0.27
       },
       {
         "date": "2026-07-10",
-        "PC1": 0.0488,
-        "PC2": -0.2634,
-        "PC3": 0.2118,
-        "PC4": -0.0415
+        "PC1": -0.0033,
+        "PC2": -0.26,
+        "PC3": -0.208,
+        "PC4": -0.0219
       },
       {
         "date": "2026-07-13",
-        "PC1": 3.3816,
-        "PC2": -0.1072,
-        "PC3": 0.118,
-        "PC4": 0.0644
+        "PC1": 3.404,
+        "PC2": -0.0839,
+        "PC3": -0.0972,
+        "PC4": 0.1105
       },
       {
         "date": "2026-07-14",
-        "PC1": -0.4558,
-        "PC2": 0.2979,
-        "PC3": 0.3439,
-        "PC4": -0.2694
+        "PC1": -0.5186,
+        "PC2": 0.3194,
+        "PC3": -0.4077,
+        "PC4": -0.1861
       },
       {
         "date": "2026-07-15",
-        "PC1": -1.0715,
-        "PC2": 0.1395,
-        "PC3": -0.2282,
-        "PC4": 0.224
+        "PC1": -1.1463,
+        "PC2": 0.1493,
+        "PC3": 0.2465,
+        "PC4": 0.2191
       },
       {
         "date": "2026-07-16",
-        "PC1": -0.3083,
-        "PC2": -0.2551,
-        "PC3": -0.2174,
-        "PC4": 0.0563
+        "PC1": -0.3676,
+        "PC2": -0.2313,
+        "PC3": 0.2386,
+        "PC4": 0.0202
       },
       {
         "date": "2026-07-17",
-        "PC1": 0.936,
-        "PC2": -0.3022,
-        "PC3": 0.0583,
-        "PC4": 0.5464
+        "PC1": 0.9055,
+        "PC2": -0.3394,
+        "PC3": 0.0325,
+        "PC4": 0.5532
       },
       {
         "date": "2026-07-20",
-        "PC1": 0.0736,
-        "PC2": -0.2191,
-        "PC3": -0.0046,
-        "PC4": 0.0106
+        "PC1": 0.0225,
+        "PC2": -0.2037,
+        "PC3": 0.0158,
+        "PC4": 0.0073
       },
       {
         "date": "2026-07-21",
-        "PC1": 1.6561,
-        "PC2": -0.1507,
-        "PC3": -1.1956,
-        "PC4": -0.082
+        "PC1": 1.6407,
+        "PC2": -0.027,
+        "PC3": 1.2111,
+        "PC4": -0.22
       },
       {
         "date": "2026-07-22",
-        "PC1": 1.5887,
-        "PC2": -0.0663,
-        "PC3": 0.0978,
-        "PC4": -0.1873
+        "PC1": 1.5708,
+        "PC2": -0.0276,
+        "PC3": -0.119,
+        "PC4": -0.1543
       },
       {
         "date": "2026-07-23",
-        "PC1": 2.5131,
-        "PC2": 0.9673,
-        "PC3": -0.1542,
-        "PC4": 0.2671
+        "PC1": 2.5197,
+        "PC2": 1.0026,
+        "PC3": 0.1395,
+        "PC4": 0.3736
       },
       {
         "date": "2026-07-24",
-        "PC1": -1.3986,
-        "PC2": -0.5225,
-        "PC3": -0.3335,
-        "PC4": -0.1718
+        "PC1": -1.4833,
+        "PC2": -0.4789,
+        "PC3": 0.3378,
+        "PC4": -0.2566
       },
       {
         "date": "2026-07-27",
-        "PC1": -2.6354,
-        "PC2": 0.1373,
-        "PC3": 0.2397,
-        "PC4": -0.4751
+        "PC1": -2.7473,
+        "PC2": 0.1704,
+        "PC3": -0.3274,
+        "PC4": -0.4366
       },
       {
         "date": "2026-07-28",
-        "PC1": -1.7279,
-        "PC2": -0.1416,
-        "PC3": -0.7782,
-        "PC4": -0.1072
+        "PC1": -1.8185,
+        "PC2": -0.0672,
+        "PC3": 0.7735,
+        "PC4": -0.215
       },
       {
         "date": "2026-07-29",
-        "PC1": 3.534,
-        "PC2": -0.1614,
-        "PC3": -0.1653,
-        "PC4": -0.1762
+        "PC1": 3.5591,
+        "PC2": -0.0936,
+        "PC3": 0.1609,
+        "PC4": -0.1718
       },
       {
         "date": "2026-07-30",
-        "PC1": 0.1819,
-        "PC2": 0.2265,
-        "PC3": -1.1333,
-        "PC4": 0.2825
+        "PC1": 0.1359,
+        "PC2": 0.307,
+        "PC3": 1.1703,
+        "PC4": 0.1797
       },
       {
         "date": "2026-07-31",
-        "PC1": 0.2144,
-        "PC2": -0.8628,
-        "PC3": -0.0882,
-        "PC4": -0.1319
+        "PC1": 0.1645,
+        "PC2": -0.8367,
+        "PC3": 0.1199,
+        "PC4": -0.2056
       },
       {
         "date": "2026-08-04",
-        "PC1": -2.921,
-        "PC2": -0.2401,
-        "PC3": 0.4954,
-        "PC4": -0.2597
+        "PC1": -3.0396,
+        "PC2": -0.2545,
+        "PC3": -0.5357,
+        "PC4": -0.2242
       },
       {
         "date": "2026-08-05",
-        "PC1": -3.5914,
-        "PC2": 0.3504,
-        "PC3": -0.0472,
-        "PC4": 0.0193
+        "PC1": -3.7221,
+        "PC2": 0.3543,
+        "PC3": 0.0148,
+        "PC4": 0.0379
       },
       {
         "date": "2026-08-06",
-        "PC1": 1.8783,
-        "PC2": 0.3526,
-        "PC3": 0.4203,
-        "PC4": -0.5497
+        "PC1": 1.8663,
+        "PC2": 0.4108,
+        "PC3": -0.519,
+        "PC4": -0.4374
       },
       {
         "date": "2026-08-07",
-        "PC1": -0.9656,
-        "PC2": 0.642,
-        "PC3": 0.3645,
-        "PC4": 0.2174
+        "PC1": -1.0373,
+        "PC2": 0.617,
+        "PC3": -0.3845,
+        "PC4": 0.3351
       },
       {
         "date": "2026-08-10",
-        "PC1": 4.444,
-        "PC2": -1.0024,
-        "PC3": 0.1625,
-        "PC4": -0.6332
+        "PC1": 4.4856,
+        "PC2": -0.9223,
+        "PC3": -0.1805,
+        "PC4": -0.6621
       },
       {
         "date": "2026-08-11",
-        "PC1": 1.1163,
-        "PC2": 0.0278,
-        "PC3": 0.1588,
-        "PC4": -0.243
+        "PC1": 1.0879,
+        "PC2": 0.0659,
+        "PC3": -0.1955,
+        "PC4": -0.1972
       },
       {
         "date": "2026-08-12",
-        "PC1": -0.1003,
-        "PC2": -0.206,
-        "PC3": -0.0546,
-        "PC4": 0.1065
+        "PC1": -0.1549,
+        "PC2": -0.1971,
+        "PC3": 0.0781,
+        "PC4": 0.0975
       },
       {
         "date": "2026-08-13",
-        "PC1": -0.1559,
-        "PC2": -0.2213,
-        "PC3": 0.0228,
-        "PC4": 0.5155
+        "PC1": -0.2104,
+        "PC2": -0.2583,
+        "PC3": 0.056,
+        "PC4": 0.5175
       },
       {
         "date": "2026-08-14",
-        "PC1": 0.7855,
-        "PC2": -0.165,
-        "PC3": -0.2147,
-        "PC4": -0.4404
+        "PC1": 0.749,
+        "PC2": -0.0851,
+        "PC3": 0.1666,
+        "PC4": -0.4636
       },
       {
         "date": "2026-08-17",
-        "PC1": 2.1937,
-        "PC2": 0.4337,
-        "PC3": 0.1895,
-        "PC4": 0.2778
+        "PC1": 2.1917,
+        "PC2": 0.4321,
+        "PC3": -0.1767,
+        "PC4": 0.3764
       },
       {
         "date": "2026-08-18",
-        "PC1": 0.2536,
-        "PC2": -0.7469,
-        "PC3": -0.4305,
-        "PC4": 0.1238
+        "PC1": 0.206,
+        "PC2": -0.718,
+        "PC3": 0.4947,
+        "PC4": 0.0195
       },
       {
         "date": "2026-08-19",
-        "PC1": -0.3831,
-        "PC2": 0.3261,
-        "PC3": -0.3277,
-        "PC4": -0.2778
+        "PC1": -0.4438,
+        "PC2": 0.3991,
+        "PC3": 0.2703,
+        "PC4": -0.2768
       },
       {
         "date": "2026-08-20",
-        "PC1": 1.7697,
-        "PC2": 0.6995,
-        "PC3": 0.2797,
-        "PC4": 0.1597
+        "PC1": 1.7585,
+        "PC2": 0.7042,
+        "PC3": -0.3012,
+        "PC4": 0.2906
       },
       {
         "date": "2026-08-21",
-        "PC1": -0.0544,
-        "PC2": 0.0653,
-        "PC3": 0.2518,
-        "PC4": 0.3956
+        "PC1": -0.1066,
+        "PC2": 0.028,
+        "PC3": -0.2091,
+        "PC4": 0.4531
       },
       {
         "date": "2026-08-24",
-        "PC1": -1.3403,
-        "PC2": -0.0044,
-        "PC3": -0.4986,
-        "PC4": -0.0837
+        "PC1": -1.4221,
+        "PC2": 0.0514,
+        "PC3": 0.4864,
+        "PC4": -0.1404
       },
       {
         "date": "2026-08-25",
-        "PC1": -2.3762,
-        "PC2": 0.4218,
-        "PC3": -0.0251,
-        "PC4": -0.4116
+        "PC1": -2.4813,
+        "PC2": 0.4745,
+        "PC3": -0.0665,
+        "PC4": -0.3782
       },
       {
         "date": "2026-08-26",
-        "PC1": 1.1615,
-        "PC2": 0.4957,
-        "PC3": 0.1865,
-        "PC4": 0.1252
+        "PC1": 1.1364,
+        "PC2": 0.5037,
+        "PC3": -0.2013,
+        "PC4": 0.2209
       },
       {
         "date": "2026-08-27",
-        "PC1": 1.5658,
-        "PC2": 0.3087,
-        "PC3": 0.0434,
-        "PC4": -0.4363
+        "PC1": 1.5474,
+        "PC2": 0.3814,
+        "PC3": -0.1201,
+        "PC4": -0.3774
       },
       {
         "date": "2026-08-28",
-        "PC1": -1.8611,
-        "PC2": -0.4858,
-        "PC3": -0.0198,
-        "PC4": 0.1688
+        "PC1": -1.9551,
+        "PC2": -0.5008,
+        "PC3": 0.0624,
+        "PC4": 0.1265
       },
       {
         "date": "2026-08-31",
-        "PC1": 0.9423,
-        "PC2": -0.2009,
-        "PC3": -0.4154,
-        "PC4": 0.1274
+        "PC1": 0.9111,
+        "PC2": -0.1607,
+        "PC3": 0.4496,
+        "PC4": 0.0805
       },
       {
         "date": "2026-09-01",
-        "PC1": 2.6857,
-        "PC2": -0.2518,
-        "PC3": 0.3132,
-        "PC4": 0.4423
+        "PC1": 2.6935,
+        "PC2": -0.2862,
+        "PC3": -0.2374,
+        "PC4": 0.4977
       },
       {
         "date": "2026-09-02",
-        "PC1": -1.0915,
-        "PC2": -0.1343,
-        "PC3": 0.0852,
-        "PC4": -0.1349
+        "PC1": -1.1687,
+        "PC2": -0.1174,
+        "PC3": -0.1036,
+        "PC4": -0.128
       },
       {
         "date": "2026-09-03",
-        "PC1": -0.9482,
-        "PC2": 0.1049,
-        "PC3": 0.0986,
-        "PC4": -0.0979
+        "PC1": -1.0216,
+        "PC2": 0.1219,
+        "PC3": -0.126,
+        "PC4": -0.0659
       },
       {
         "date": "2026-09-04",
-        "PC1": -0.1853,
-        "PC2": -0.075,
-        "PC3": 0.5179,
-        "PC4": -0.3658
+        "PC1": -0.2433,
+        "PC2": -0.0613,
+        "PC3": -0.574,
+        "PC4": -0.2938
+      },
+      {
+        "date": "2026-09-08",
+        "PC1": 1.1382,
+        "PC2": -0.3873,
+        "PC3": -0.1657,
+        "PC4": -0.345
       }
     ],
     "loadings": [
       {
         "symbol": "ATH",
-        "PC1": 0.5022,
-        "PC2": 0.2207,
-        "PC3": 0.8294,
-        "PC4": 0.1052
+        "PC1": 0.5024,
+        "PC2": 0.1521,
+        "PC3": -0.8195,
+        "PC4": 0.2302
       },
       {
         "symbol": "CJ",
-        "PC1": 0.4942,
-        "PC2": 0.7046,
-        "PC3": -0.4587,
-        "PC4": -0.2211
+        "PC1": 0.4927,
+        "PC2": 0.7532,
+        "PC3": 0.3838,
+        "PC4": -0.2065
       },
       {
         "symbol": "SCR",
-        "PC1": 0.4991,
-        "PC2": -0.5904,
-        "PC3": -0.0651,
-        "PC4": -0.6309
+        "PC1": 0.5014,
+        "PC2": -0.525,
+        "PC3": 0.0168,
+        "PC4": -0.6876
       },
       {
         "symbol": "XEG",
-        "PC1": 0.5044,
-        "PC2": -0.3259,
-        "PC3": -0.312,
-        "PC4": 0.7362
+        "PC1": 0.5035,
+        "PC2": -0.366,
+        "PC3": 0.4253,
+        "PC4": 0.657
       }
     ],
     "variance_explained": {
-      "PC1": 0.891,
-      "PC2": 0.0486,
-      "PC3": 0.0328,
-      "PC4": 0.0276
+      "PC1": 0.8877,
+      "PC2": 0.0498,
+      "PC3": 0.0348,
+      "PC4": 0.0278
     }
   },
   "pca_volume": {
     "scores": [
       {
-        "date": "2026-06-08",
-        "PC1": -1.0141,
-        "PC2": 0.1428,
-        "PC3": -0.7856
-      },
-      {
-        "date": "2026-06-09",
-        "PC1": -0.5999,
-        "PC2": -0.2509,
-        "PC3": -0.7717
-      },
-      {
         "date": "2026-06-10",
-        "PC1": -0.1476,
-        "PC2": -0.6517,
-        "PC3": -0.4152
+        "PC1": -0.189,
+        "PC2": -0.6608,
+        "PC3": -0.4452
       },
       {
         "date": "2026-06-11",
-        "PC1": -0.2882,
-        "PC2": -0.7075,
-        "PC3": -0.5616
+        "PC1": -0.3317,
+        "PC2": -0.7163,
+        "PC3": -0.5928
       },
       {
         "date": "2026-06-12",
-        "PC1": -0.2467,
-        "PC2": -0.3376,
-        "PC3": -0.1316
+        "PC1": -0.2832,
+        "PC2": -0.3479,
+        "PC3": -0.1633
       },
       {
         "date": "2026-06-15",
-        "PC1": -0.1887,
-        "PC2": -0.612,
-        "PC3": 0.4377
+        "PC1": -0.2191,
+        "PC2": -0.6168,
+        "PC3": 0.4084
       },
       {
         "date": "2026-06-16",
-        "PC1": -0.1141,
-        "PC2": -0.3739,
-        "PC3": 0.779
+        "PC1": -0.1393,
+        "PC2": -0.3796,
+        "PC3": 0.7499
       },
       {
         "date": "2026-06-17",
-        "PC1": -0.4235,
-        "PC2": 0.0547,
-        "PC3": 0.5518
+        "PC1": -0.4497,
+        "PC2": 0.0451,
+        "PC3": 0.518
       },
       {
         "date": "2026-06-18",
-        "PC1": -0.5132,
-        "PC2": 0.1988,
-        "PC3": 0.5212
+        "PC1": -0.5392,
+        "PC2": 0.188,
+        "PC3": 0.486
       },
       {
         "date": "2026-06-19",
-        "PC1": -1.2382,
-        "PC2": 0.2461,
-        "PC3": 0.2614
+        "PC1": -1.2674,
+        "PC2": 0.2368,
+        "PC3": 0.2192
       },
       {
         "date": "2026-06-22",
-        "PC1": -1.9584,
-        "PC2": -0.0677,
-        "PC3": 0.1651
+        "PC1": -1.9903,
+        "PC2": -0.0711,
+        "PC3": 0.1175
       },
       {
         "date": "2026-06-23",
-        "PC1": -2.5079,
-        "PC2": 0.0819,
-        "PC3": 0.1765
+        "PC1": -2.5391,
+        "PC2": 0.0796,
+        "PC3": 0.1234
       },
       {
         "date": "2026-06-24",
-        "PC1": -1.2819,
-        "PC2": 0.1251,
-        "PC3": 0.1288
+        "PC1": -1.3132,
+        "PC2": 0.1165,
+        "PC3": 0.0865
       },
       {
         "date": "2026-06-25",
-        "PC1": -1.671,
-        "PC2": -0.1449,
-        "PC3": 0.4496
+        "PC1": -1.6996,
+        "PC2": -0.1474,
+        "PC3": 0.4053
       },
       {
         "date": "2026-06-26",
-        "PC1": -1.0736,
-        "PC2": 0.2574,
-        "PC3": 0.6847
+        "PC1": -1.0974,
+        "PC2": 0.2495,
+        "PC3": 0.6445
       },
       {
         "date": "2026-06-29",
-        "PC1": -0.6072,
-        "PC2": 0.4376,
-        "PC3": 0.7131
+        "PC1": -0.6297,
+        "PC2": 0.4259,
+        "PC3": 0.6763
       },
       {
         "date": "2026-06-30",
-        "PC1": 0.0001,
-        "PC2": 0.0731,
-        "PC3": 0.8158
+        "PC1": -0.0226,
+        "PC2": 0.0627,
+        "PC3": 0.7859
       },
       {
         "date": "2026-07-02",
-        "PC1": -0.3696,
-        "PC2": -0.0168,
-        "PC3": 0.7385
+        "PC1": -0.3938,
+        "PC2": -0.025,
+        "PC3": 0.7056
       },
       {
         "date": "2026-07-03",
-        "PC1": -0.902,
-        "PC2": -0.1089,
-        "PC3": 0.6113
+        "PC1": -0.9283,
+        "PC2": -0.1145,
+        "PC3": 0.5739
       },
       {
         "date": "2026-07-06",
-        "PC1": -0.0154,
-        "PC2": 0.1026,
-        "PC3": 0.8824
+        "PC1": -0.0372,
+        "PC2": 0.0923,
+        "PC3": 0.8525
       },
       {
         "date": "2026-07-07",
-        "PC1": -0.1717,
-        "PC2": -0.2056,
-        "PC3": 0.4142
+        "PC1": -0.2007,
+        "PC2": -0.2146,
+        "PC3": 0.3834
       },
       {
         "date": "2026-07-08",
-        "PC1": 0.2624,
-        "PC2": -0.7221,
-        "PC3": -0.0459
+        "PC1": 0.2254,
+        "PC2": -0.7305,
+        "PC3": -0.0714
       },
       {
         "date": "2026-07-09",
-        "PC1": -0.4575,
-        "PC2": -1.3995,
-        "PC3": -0.0101
+        "PC1": -0.4971,
+        "PC2": -1.3978,
+        "PC3": -0.0393
       },
       {
         "date": "2026-07-10",
-        "PC1": 0.0407,
-        "PC2": -1.313,
-        "PC3": -0.1918
+        "PC1": -0.0007,
+        "PC2": -1.3154,
+        "PC3": -0.2172
       },
       {
         "date": "2026-07-13",
-        "PC1": -0.5068,
-        "PC2": -2.6365,
-        "PC3": -0.5947
+        "PC1": -0.559,
+        "PC2": -2.6255,
+        "PC3": -0.6203
       },
       {
         "date": "2026-07-14",
-        "PC1": -0.3514,
-        "PC2": -2.5417,
-        "PC3": -0.4232
+        "PC1": -0.4011,
+        "PC2": -2.5315,
+        "PC3": -0.4476
       },
       {
         "date": "2026-07-15",
-        "PC1": -1.448,
-        "PC2": -2.159,
-        "PC3": -0.691
+        "PC1": -1.4995,
+        "PC2": -2.1489,
+        "PC3": -0.727
       },
       {
         "date": "2026-07-16",
-        "PC1": -0.8451,
-        "PC2": -1.8912,
-        "PC3": -0.2917
+        "PC1": -0.8904,
+        "PC2": -1.8844,
+        "PC3": -0.3228
       },
       {
         "date": "2026-07-17",
-        "PC1": -0.1806,
-        "PC2": -1.8145,
-        "PC3": 0.2444
+        "PC1": -0.2187,
+        "PC2": -1.8086,
+        "PC3": 0.2196
       },
       {
         "date": "2026-07-20",
-        "PC1": -0.8761,
-        "PC2": -0.8621,
-        "PC3": -0.1691
+        "PC1": -0.9154,
+        "PC2": -0.8646,
+        "PC3": -0.2044
       },
       {
         "date": "2026-07-21",
-        "PC1": 0.0433,
-        "PC2": -0.8391,
-        "PC3": -0.4249
+        "PC1": 0.0011,
+        "PC2": -0.8474,
+        "PC3": -0.4524
       },
       {
         "date": "2026-07-22",
-        "PC1": 0.316,
-        "PC2": -0.4965,
-        "PC3": -0.2386
+        "PC1": 0.2776,
+        "PC2": -0.5084,
+        "PC3": -0.2648
       },
       {
         "date": "2026-07-23",
-        "PC1": 1.4006,
-        "PC2": -0.3092,
-        "PC3": 0.5898
+        "PC1": 1.3736,
+        "PC2": -0.3236,
+        "PC3": 0.5736
       },
       {
         "date": "2026-07-24",
-        "PC1": 1.7171,
-        "PC2": 0.2069,
-        "PC3": 0.3014
+        "PC1": 1.6888,
+        "PC2": 0.1845,
+        "PC3": 0.2856
       },
       {
         "date": "2026-07-27",
-        "PC1": 2.1865,
-        "PC2": 0.8243,
-        "PC3": 0.0988
+        "PC1": 2.1584,
+        "PC2": 0.7925,
+        "PC3": 0.0845
       },
       {
         "date": "2026-07-28",
-        "PC1": 2.6819,
-        "PC2": 0.808,
-        "PC3": 0.3151
+        "PC1": 2.6565,
+        "PC2": 0.7753,
+        "PC3": 0.3055
       },
       {
         "date": "2026-07-29",
-        "PC1": 3.1961,
-        "PC2": 0.0241,
-        "PC3": -0.147
+        "PC1": 3.1616,
+        "PC2": -0.0058,
+        "PC3": -0.1496
       },
       {
         "date": "2026-07-30",
-        "PC1": 2.806,
-        "PC2": 0.2336,
-        "PC3": -0.3373
+        "PC1": 2.7699,
+        "PC2": 0.2025,
+        "PC3": -0.3444
       },
       {
         "date": "2026-07-31",
-        "PC1": 2.7625,
-        "PC2": 0.0553,
-        "PC3": -0.3885
+        "PC1": 2.725,
+        "PC2": 0.0258,
+        "PC3": -0.3954
       },
       {
         "date": "2026-08-04",
-        "PC1": 2.8097,
-        "PC2": -0.0679,
-        "PC3": -0.3695
+        "PC1": 2.7719,
+        "PC2": -0.0962,
+        "PC3": -0.3754
       },
       {
         "date": "2026-08-05",
-        "PC1": 2.6777,
-        "PC2": 0.0337,
-        "PC3": -0.1557
+        "PC1": 2.6431,
+        "PC2": 0.0061,
+        "PC3": -0.1629
       },
       {
         "date": "2026-08-06",
-        "PC1": 2.4212,
-        "PC2": 0.4322,
-        "PC3": -0.218
+        "PC1": 2.3874,
+        "PC2": 0.4016,
+        "PC3": -0.2291
       },
       {
         "date": "2026-08-07",
-        "PC1": 1.6515,
-        "PC2": 0.4268,
-        "PC3": -0.7508
+        "PC1": 1.6109,
+        "PC2": 0.3969,
+        "PC3": -0.7695
       },
       {
         "date": "2026-08-10",
-        "PC1": 1.7761,
-        "PC2": 0.4743,
-        "PC3": -0.747
+        "PC1": 1.7357,
+        "PC2": 0.4434,
+        "PC3": -0.7648
       },
       {
         "date": "2026-08-11",
-        "PC1": 1.0511,
-        "PC2": 0.0152,
-        "PC3": -0.2979
+        "PC1": 1.0142,
+        "PC2": -0.0055,
+        "PC3": -0.3197
       },
       {
         "date": "2026-08-12",
-        "PC1": -0.8129,
-        "PC2": 0.2869,
-        "PC3": -0.5443
+        "PC1": -0.852,
+        "PC2": 0.2709,
+        "PC3": -0.5841
       },
       {
         "date": "2026-08-13",
-        "PC1": -1.4787,
-        "PC2": 1.7234,
-        "PC3": -0.6548
+        "PC1": -1.5131,
+        "PC2": 1.6959,
+        "PC3": -0.7063
       },
       {
         "date": "2026-08-14",
-        "PC1": -1.6401,
-        "PC2": 1.3883,
-        "PC3": -0.6948
+        "PC1": -1.6765,
+        "PC2": 1.3646,
+        "PC3": -0.7465
       },
       {
         "date": "2026-08-17",
-        "PC1": -2.1662,
-        "PC2": 1.5124,
-        "PC3": -0.716
+        "PC1": -2.2024,
+        "PC2": 1.4898,
+        "PC3": -0.7729
       },
       {
         "date": "2026-08-18",
-        "PC1": -1.9796,
-        "PC2": 1.5716,
-        "PC3": -0.5423
+        "PC1": -2.0134,
+        "PC2": 1.5485,
+        "PC3": -0.5975
       },
       {
         "date": "2026-08-19",
-        "PC1": -1.1479,
-        "PC2": 1.8072,
-        "PC3": -0.9319
+        "PC1": -1.1854,
+        "PC2": 1.7759,
+        "PC3": -0.9812
       },
       {
         "date": "2026-08-20",
-        "PC1": -1.0902,
-        "PC2": 1.044,
-        "PC3": 0.1274
+        "PC1": -1.1176,
+        "PC2": 1.0255,
+        "PC3": 0.0831
       },
       {
         "date": "2026-08-21",
-        "PC1": -0.1608,
-        "PC2": 1.5155,
-        "PC3": -0.2756
+        "PC1": -0.1912,
+        "PC2": 1.4859,
+        "PC3": -0.3141
       },
       {
         "date": "2026-08-24",
-        "PC1": -0.3252,
-        "PC2": 1.4123,
-        "PC3": -0.1242
+        "PC1": -0.3541,
+        "PC2": 1.3853,
+        "PC3": -0.1635
       },
       {
         "date": "2026-08-25",
-        "PC1": 0.1839,
-        "PC2": 1.1777,
-        "PC3": 0.1802
+        "PC1": 0.1579,
+        "PC2": 1.1523,
+        "PC3": 0.1468
       },
       {
         "date": "2026-08-26",
-        "PC1": -0.256,
-        "PC2": 0.4966,
-        "PC3": 0.6382
+        "PC1": -0.2792,
+        "PC2": 0.4823,
+        "PC3": 0.6042
       },
       {
         "date": "2026-08-27",
-        "PC1": -0.3426,
-        "PC2": 0.7313,
-        "PC3": 0.1913
+        "PC1": -0.3704,
+        "PC2": 0.7128,
+        "PC3": 0.155
       },
       {
         "date": "2026-08-28",
-        "PC1": -0.8542,
-        "PC2": 0.1713,
-        "PC3": 0.588
+        "PC1": -0.8795,
+        "PC2": 0.1627,
+        "PC3": 0.5499
       },
       {
         "date": "2026-08-31",
-        "PC1": 0.1303,
-        "PC2": -0.3027,
-        "PC3": 0.2862
+        "PC1": 0.0993,
+        "PC2": -0.3129,
+        "PC3": 0.2583
       },
       {
         "date": "2026-09-01",
-        "PC1": 0.325,
-        "PC2": 0.0013,
-        "PC3": 0.2988
+        "PC1": 0.2955,
+        "PC2": -0.0127,
+        "PC3": 0.2714
       },
       {
         "date": "2026-09-02",
-        "PC1": 0.6595,
-        "PC2": 0.4545,
-        "PC3": 0.3489
+        "PC1": 0.6326,
+        "PC2": 0.4348,
+        "PC3": 0.3228
       },
       {
         "date": "2026-09-03",
-        "PC1": 0.5889,
-        "PC2": -0.0855,
-        "PC3": 0.67
+        "PC1": 0.5638,
+        "PC2": -0.0979,
+        "PC3": 0.6458
       },
       {
         "date": "2026-09-04",
-        "PC1": 0.5648,
-        "PC2": 0.3696,
-        "PC3": 0.4329
+        "PC1": 0.5386,
+        "PC2": 0.3516,
+        "PC3": 0.4064
+      },
+      {
+        "date": "2026-09-08",
+        "PC1": 0.3982,
+        "PC2": 0.7478,
+        "PC3": 0.2971
       }
     ],
     "loadings": [
       {
         "symbol": "ATH",
-        "PC1": 0.5435,
-        "PC2": 0.6525,
-        "PC3": -0.5281
+        "PC1": 0.5454,
+        "PC2": 0.6476,
+        "PC3": -0.5321
       },
       {
         "symbol": "CJ",
-        "PC1": 0.6857,
-        "PC2": 0.0178,
-        "PC3": 0.7277
+        "PC1": 0.6871,
+        "PC2": 0.0181,
+        "PC3": 0.7263
       },
       {
         "symbol": "SCR",
-        "PC1": 0.4843,
-        "PC2": -0.7576,
-        "PC3": -0.4377
+        "PC1": 0.48,
+        "PC2": -0.7618,
+        "PC3": -0.4351
       }
     ],
     "variance_explained": {
-      "PC1": 0.6155,
-      "PC2": 0.3017,
-      "PC3": 0.0828
+      "PC1": 0.6187,
+      "PC2": 0.3033,
+      "PC3": 0.078
     }
   },
   "oil": [
@@ -42262,6 +42309,11 @@
       "date": "2026-09-04",
       "wti_front": 91.48,
       "wti_12m": 74.7
+    },
+    {
+      "date": "2026-09-08",
+      "wti_front": 93.03,
+      "wti_12m": 75.72
     }
   ]
 }

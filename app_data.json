@@ -3312,7 +3312,7 @@
       "symbol": "CJ",
       "volume": 476900,
       "adjusted": 5.85,
-      "daily_return": 0,
+      "daily_return": -0,
       "ma_20": 5.63,
       "ma_50": 5.46,
       "vol_zscore": 0.4086,
@@ -3460,7 +3460,7 @@
       "ma_20": 5.62,
       "ma_50": 5.48,
       "vol_zscore": 0.4511,
-      "vwap_dev": -1.99,
+      "vwap_dev": -2,
       "illiquidity_20": 0.24
     },
     {
@@ -5385,7 +5385,7 @@
       "vwap_dev": 1.12,
       "illiquidity_20": 0.42,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.096
+      "high_vol_prob": 0.0963
     },
     {
       "date": "2024-06-28",
@@ -5441,7 +5441,7 @@
       "vwap_dev": 2.44,
       "illiquidity_20": 0.44,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1121
+      "high_vol_prob": 0.1125
     },
     {
       "date": "2024-07-02",
@@ -5497,7 +5497,7 @@
       "vwap_dev": 1.23,
       "illiquidity_20": 0.44,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1281
+      "high_vol_prob": 0.1285
     },
     {
       "date": "2024-07-03",
@@ -5553,7 +5553,7 @@
       "vwap_dev": 1.94,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0923
+      "high_vol_prob": 0.0925
     },
     {
       "date": "2024-07-04",
@@ -5609,7 +5609,7 @@
       "vwap_dev": 0.45,
       "illiquidity_20": 0.46,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1911
+      "high_vol_prob": 0.1899
     },
     {
       "date": "2024-07-05",
@@ -5665,7 +5665,7 @@
       "vwap_dev": 0.46,
       "illiquidity_20": 0.45,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0938
+      "high_vol_prob": 0.0941
     },
     {
       "date": "2024-07-08",
@@ -5721,7 +5721,7 @@
       "vwap_dev": -0.46,
       "illiquidity_20": 0.44,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1379
+      "high_vol_prob": 0.1384
     },
     {
       "date": "2024-07-09",
@@ -5777,7 +5777,7 @@
       "vwap_dev": 0.63,
       "illiquidity_20": 0.44,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1059
+      "high_vol_prob": 0.1051
     },
     {
       "date": "2024-07-10",
@@ -5833,7 +5833,7 @@
       "vwap_dev": 2.12,
       "illiquidity_20": 0.46,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1227
+      "high_vol_prob": 0.1232
     },
     {
       "date": "2024-07-11",
@@ -5889,7 +5889,7 @@
       "vwap_dev": 2.27,
       "illiquidity_20": 0.45,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0831
+      "high_vol_prob": 0.0835
     },
     {
       "date": "2024-07-12",
@@ -5945,7 +5945,7 @@
       "vwap_dev": 4.41,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3522
+      "high_vol_prob": 0.3523
     },
     {
       "date": "2024-07-15",
@@ -6001,7 +6001,7 @@
       "vwap_dev": 5.19,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1118
+      "high_vol_prob": 0.1116
     },
     {
       "date": "2024-07-16",
@@ -6057,7 +6057,7 @@
       "vwap_dev": 4.06,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1066
+      "high_vol_prob": 0.1064
     },
     {
       "date": "2024-07-17",
@@ -6113,7 +6113,7 @@
       "vwap_dev": 3.63,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0941
+      "high_vol_prob": 0.0938
     },
     {
       "date": "2024-07-18",
@@ -6169,7 +6169,7 @@
       "vwap_dev": 2.29,
       "illiquidity_20": 0.47,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1204
+      "high_vol_prob": 0.12
     },
     {
       "date": "2024-07-19",
@@ -6225,7 +6225,7 @@
       "vwap_dev": 3.21,
       "illiquidity_20": 0.48,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1241
+      "high_vol_prob": 0.1237
     },
     {
       "date": "2024-07-22",
@@ -6281,7 +6281,7 @@
       "vwap_dev": 1.97,
       "illiquidity_20": 0.42,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1057
+      "high_vol_prob": 0.1055
     },
     {
       "date": "2024-07-23",
@@ -6337,7 +6337,7 @@
       "vwap_dev": 1.23,
       "illiquidity_20": 0.4,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0936
+      "high_vol_prob": 0.0937
     },
     {
       "date": "2024-07-24",
@@ -6365,7 +6365,7 @@
       "vwap_dev": -1.52,
       "illiquidity_20": 0.07,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4627
+      "high_vol_prob": 0.4626
     },
     {
       "date": "2024-07-25",
@@ -6393,7 +6393,7 @@
       "vwap_dev": 1.37,
       "illiquidity_20": 0.4,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0877
+      "high_vol_prob": 0.0879
     },
     {
       "date": "2024-07-25",
@@ -6561,7 +6561,7 @@
       "vwap_dev": 0.66,
       "illiquidity_20": 0.32,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1043
+      "high_vol_prob": 0.1036
     },
     {
       "date": "2024-07-30",
@@ -6617,7 +6617,7 @@
       "vwap_dev": 0.11,
       "illiquidity_20": 0.3,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1114
+      "high_vol_prob": 0.1106
     },
     {
       "date": "2024-07-31",
@@ -6673,7 +6673,7 @@
       "vwap_dev": -2.28,
       "illiquidity_20": 0.26,
       "regime": "High Volatility",
-      "high_vol_prob": 0.6915
+      "high_vol_prob": 0.6926
     },
     {
       "date": "2024-08-01",
@@ -6729,7 +6729,7 @@
       "vwap_dev": -3.38,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2719
+      "high_vol_prob": 0.2708
     },
     {
       "date": "2024-08-02",
@@ -6785,7 +6785,7 @@
       "vwap_dev": -2.24,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1571
+      "high_vol_prob": 0.1569
     },
     {
       "date": "2024-08-06",
@@ -6813,7 +6813,7 @@
       "vwap_dev": -4.65,
       "illiquidity_20": 0.06,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3118
+      "high_vol_prob": 0.3119
     },
     {
       "date": "2024-08-07",
@@ -6953,7 +6953,7 @@
       "vwap_dev": -0.84,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1315
+      "high_vol_prob": 0.1314
     },
     {
       "date": "2024-08-09",
@@ -7079,7 +7079,7 @@
       "vwap_dev": -0.01,
       "illiquidity_20": 3.11,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3301
+      "high_vol_prob": 0.3302
     },
     {
       "date": "2024-08-13",
@@ -7121,7 +7121,7 @@
       "vwap_dev": 1.97,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1371
+      "high_vol_prob": 0.1368
     },
     {
       "date": "2024-08-14",
@@ -7177,7 +7177,7 @@
       "vwap_dev": 3.92,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2852
+      "high_vol_prob": 0.2855
     },
     {
       "date": "2024-08-15",
@@ -7233,7 +7233,7 @@
       "vwap_dev": 1.5,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4811
+      "high_vol_prob": 0.4804
     },
     {
       "date": "2024-08-16",
@@ -7289,7 +7289,7 @@
       "vwap_dev": 0.99,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1303
+      "high_vol_prob": 0.1301
     },
     {
       "date": "2024-08-19",
@@ -7345,7 +7345,7 @@
       "vwap_dev": -0.1,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1824
+      "high_vol_prob": 0.1823
     },
     {
       "date": "2024-08-20",
@@ -7401,7 +7401,7 @@
       "vwap_dev": -0.36,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1026
+      "high_vol_prob": 0.103
     },
     {
       "date": "2024-08-21",
@@ -7457,7 +7457,7 @@
       "vwap_dev": 0.09,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0978
+      "high_vol_prob": 0.0982
     },
     {
       "date": "2024-08-22",
@@ -7513,7 +7513,7 @@
       "vwap_dev": 1.4,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1268
+      "high_vol_prob": 0.1271
     },
     {
       "date": "2024-08-23",
@@ -7569,7 +7569,7 @@
       "vwap_dev": 3.45,
       "illiquidity_20": 0.27,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.238
+      "high_vol_prob": 0.2368
     },
     {
       "date": "2024-08-26",
@@ -7625,7 +7625,7 @@
       "vwap_dev": 1.37,
       "illiquidity_20": 0.28,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3327
+      "high_vol_prob": 0.3349
     },
     {
       "date": "2024-08-27",
@@ -7681,7 +7681,7 @@
       "vwap_dev": 1.08,
       "illiquidity_20": 0.28,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1217
+      "high_vol_prob": 0.1214
     },
     {
       "date": "2024-08-28",
@@ -7737,7 +7737,7 @@
       "vwap_dev": 2.71,
       "illiquidity_20": 0.3,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1824
+      "high_vol_prob": 0.1818
     },
     {
       "date": "2024-08-29",
@@ -7751,7 +7751,7 @@
       "vwap_dev": 0.4,
       "illiquidity_20": 3.39,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2986
+      "high_vol_prob": 0.2987
     },
     {
       "date": "2024-08-29",
@@ -7849,7 +7849,7 @@
       "vwap_dev": -2.69,
       "illiquidity_20": 0.31,
       "regime": "High Volatility",
-      "high_vol_prob": 0.8817
+      "high_vol_prob": 0.8824
     },
     {
       "date": "2024-09-03",
@@ -7905,7 +7905,7 @@
       "vwap_dev": -3.8,
       "illiquidity_20": 0.31,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3321
+      "high_vol_prob": 0.3313
     },
     {
       "date": "2024-09-04",
@@ -8017,7 +8017,7 @@
       "vwap_dev": -5.8,
       "illiquidity_20": 0.26,
       "regime": "High Volatility",
-      "high_vol_prob": 0.5067
+      "high_vol_prob": 0.5066
     },
     {
       "date": "2024-09-06",
@@ -8031,7 +8031,7 @@
       "vwap_dev": -9.29,
       "illiquidity_20": 2.87,
       "regime": "High Volatility",
-      "high_vol_prob": 0.7035
+      "high_vol_prob": 0.7034
     },
     {
       "date": "2024-09-06",
@@ -8129,7 +8129,7 @@
       "vwap_dev": -6.7,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3047
+      "high_vol_prob": 0.3046
     },
     {
       "date": "2024-09-10",
@@ -8185,7 +8185,7 @@
       "vwap_dev": -5.93,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2322
+      "high_vol_prob": 0.2307
     },
     {
       "date": "2024-09-11",
@@ -8297,7 +8297,7 @@
       "vwap_dev": -4.36,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2592
+      "high_vol_prob": 0.2591
     },
     {
       "date": "2024-09-13",
@@ -8353,7 +8353,7 @@
       "vwap_dev": -3.65,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2366
+      "high_vol_prob": 0.2368
     },
     {
       "date": "2024-09-16",
@@ -8409,7 +8409,7 @@
       "vwap_dev": -3.02,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2583
+      "high_vol_prob": 0.2591
     },
     {
       "date": "2024-09-17",
@@ -9095,7 +9095,7 @@
       "vwap_dev": 2.3,
       "illiquidity_20": 2.98,
       "regime": "High Volatility",
-      "high_vol_prob": 0.997
+      "high_vol_prob": 0.9971
     },
     {
       "date": "2024-10-03",
@@ -9137,7 +9137,7 @@
       "vwap_dev": 3.53,
       "illiquidity_20": 0.22,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2469
+      "high_vol_prob": 0.2468
     },
     {
       "date": "2024-10-04",
@@ -9204,7 +9204,7 @@
       "ma_20": 19.26,
       "ma_50": 20.45,
       "vol_zscore": 1.7754,
-      "vwap_dev": 1.59,
+      "vwap_dev": 1.6,
       "illiquidity_20": 2.83,
       "regime": "Low Volatility",
       "high_vol_prob": 0.3024
@@ -9473,7 +9473,7 @@
       "vwap_dev": 0.56,
       "illiquidity_20": 0.23,
       "regime": "High Volatility",
-      "high_vol_prob": 0.6202
+      "high_vol_prob": 0.6201
     },
     {
       "date": "2024-10-15",
@@ -9591,7 +9591,7 @@
       "vwap_dev": 0.05,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2755
+      "high_vol_prob": 0.275
     },
     {
       "date": "2024-10-17",
@@ -9651,7 +9651,7 @@
       "vwap_dev": 0.14,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2991
+      "high_vol_prob": 0.2989
     },
     {
       "date": "2024-10-18",
@@ -9711,7 +9711,7 @@
       "vwap_dev": 0.23,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2925
+      "high_vol_prob": 0.2922
     },
     {
       "date": "2024-10-21",
@@ -9771,7 +9771,7 @@
       "vwap_dev": 0.89,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3101
+      "high_vol_prob": 0.3118
     },
     {
       "date": "2024-10-22",
@@ -9831,7 +9831,7 @@
       "vwap_dev": -0.09,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3112
+      "high_vol_prob": 0.3107
     },
     {
       "date": "2024-10-23",
@@ -9891,7 +9891,7 @@
       "vwap_dev": 0.66,
       "illiquidity_20": 0.23,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2491
+      "high_vol_prob": 0.2489
     },
     {
       "date": "2024-10-24",
@@ -9951,7 +9951,7 @@
       "vwap_dev": 1.43,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2557
+      "high_vol_prob": 0.2556
     },
     {
       "date": "2024-10-25",
@@ -10551,7 +10551,7 @@
       "vwap_dev": -2.28,
       "illiquidity_20": 0.25,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3648
+      "high_vol_prob": 0.3647
     },
     {
       "date": "2024-11-08",
@@ -10671,7 +10671,7 @@
       "vwap_dev": -1.97,
       "illiquidity_20": 0.24,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0957
+      "high_vol_prob": 0.0956
     },
     {
       "date": "2024-11-12",
@@ -10701,7 +10701,7 @@
       "vwap_dev": -0.86,
       "illiquidity_20": 0.05,
       "regime": "High Volatility",
-      "high_vol_prob": 0.5117
+      "high_vol_prob": 0.5118
     },
     {
       "date": "2024-11-13",
@@ -11061,7 +11061,7 @@
       "vwap_dev": 2.45,
       "illiquidity_20": 0.06,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2739
+      "high_vol_prob": 0.274
     },
     {
       "date": "2024-11-21",
@@ -11451,7 +11451,7 @@
       "vwap_dev": 2.02,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1243
+      "high_vol_prob": 0.1242
     },
     {
       "date": "2024-11-29",
@@ -11721,7 +11721,7 @@
       "vwap_dev": -1.06,
       "illiquidity_20": 0.05,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2999
+      "high_vol_prob": 0.3
     },
     {
       "date": "2024-12-06",
@@ -12403,7 +12403,7 @@
       "symbol": "CJ",
       "volume": 550600,
       "adjusted": 5.34,
-      "daily_return": 2.46,
+      "daily_return": 2.45,
       "ma_20": 5.44,
       "ma_50": 5.44,
       "ma_200": 5.5,
@@ -13359,7 +13359,7 @@
       "symbol": "CJ",
       "volume": 626300,
       "adjusted": 5.66,
-      "daily_return": -0.91,
+      "daily_return": -0.9,
       "ma_20": 5.63,
       "ma_50": 5.54,
       "ma_200": 5.53,
@@ -13847,7 +13847,7 @@
       "vwap_dev": -2.76,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3566
+      "high_vol_prob": 0.3567
     },
     {
       "date": "2025-01-29",
@@ -14207,7 +14207,7 @@
       "vwap_dev": -2.96,
       "illiquidity_20": 0.26,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2805
+      "high_vol_prob": 0.2804
     },
     {
       "date": "2025-02-06",
@@ -14342,7 +14342,7 @@
       "vwap_dev": -4.88,
       "illiquidity_20": 2.19,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.009
+      "high_vol_prob": 0.0089
     },
     {
       "date": "2025-02-10",
@@ -15249,7 +15249,7 @@
       "symbol": "XEG",
       "volume": 3400500,
       "adjusted": 14.94,
-      "daily_return": -1.12,
+      "daily_return": -1.13,
       "ma_20": 16.2,
       "ma_50": 16.37,
       "ma_200": 16.59,
@@ -15347,7 +15347,7 @@
       "vwap_dev": -4.98,
       "illiquidity_20": 0.28,
       "regime": "High Volatility",
-      "high_vol_prob": 0.7089
+      "high_vol_prob": 0.709
     },
     {
       "date": "2025-03-06",
@@ -15497,7 +15497,7 @@
       "vwap_dev": -3.08,
       "illiquidity_20": 0.03,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4402
+      "high_vol_prob": 0.4403
     },
     {
       "date": "2025-03-11",
@@ -17402,7 +17402,7 @@
       "vwap_dev": -2.43,
       "illiquidity_20": 4.81,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0617
+      "high_vol_prob": 0.0618
     },
     {
       "date": "2025-04-24",
@@ -24585,7 +24585,7 @@
       "vwap_dev": -3.25,
       "illiquidity_20": 0.22,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4761
+      "high_vol_prob": 0.4797
     },
     {
       "date": "2025-10-16",
@@ -24975,7 +24975,7 @@
       "vwap_dev": -0.02,
       "illiquidity_20": 0.03,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4067
+      "high_vol_prob": 0.4066
     },
     {
       "date": "2025-10-27",
@@ -25095,7 +25095,7 @@
       "vwap_dev": -0.41,
       "illiquidity_20": 0.03,
       "regime": "High Volatility",
-      "high_vol_prob": 0.7031
+      "high_vol_prob": 0.703
     },
     {
       "date": "2025-10-29",
@@ -25215,7 +25215,7 @@
       "vwap_dev": 0.33,
       "illiquidity_20": 0.03,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4288
+      "high_vol_prob": 0.4287
     },
     {
       "date": "2025-10-31",
@@ -25365,7 +25365,7 @@
       "vwap_dev": -0.41,
       "illiquidity_20": 0.22,
       "regime": "High Volatility",
-      "high_vol_prob": 0.9292
+      "high_vol_prob": 0.9293
     },
     {
       "date": "2025-11-04",
@@ -25545,7 +25545,7 @@
       "vwap_dev": 5.58,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3006
+      "high_vol_prob": 0.3007
     },
     {
       "date": "2025-11-07",
@@ -26085,7 +26085,7 @@
       "vwap_dev": 7.8,
       "illiquidity_20": 0.19,
       "regime": "High Volatility",
-      "high_vol_prob": 0.5252
+      "high_vol_prob": 0.5253
     },
     {
       "date": "2025-11-20",
@@ -26115,7 +26115,7 @@
       "vwap_dev": 4.35,
       "illiquidity_20": 0.02,
       "regime": "High Volatility",
-      "high_vol_prob": 0.5307
+      "high_vol_prob": 0.5306
     },
     {
       "date": "2025-11-21",
@@ -27135,7 +27135,7 @@
       "vwap_dev": -2.35,
       "illiquidity_20": 0.03,
       "regime": "High Volatility",
-      "high_vol_prob": 0.6377
+      "high_vol_prob": 0.6376
     },
     {
       "date": "2025-12-16",
@@ -28905,7 +28905,7 @@
       "vwap_dev": 2.45,
       "illiquidity_20": 0.23,
       "regime": "High Volatility",
-      "high_vol_prob": 0.882
+      "high_vol_prob": 0.8833
     },
     {
       "date": "2026-01-29",
@@ -29085,7 +29085,7 @@
       "vwap_dev": 3.15,
       "illiquidity_20": 0.21,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2558
+      "high_vol_prob": 0.2557
     },
     {
       "date": "2026-02-03",
@@ -29145,7 +29145,7 @@
       "vwap_dev": 5.89,
       "illiquidity_20": 0.2,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2139
+      "high_vol_prob": 0.2138
     },
     {
       "date": "2026-02-04",
@@ -29175,7 +29175,7 @@
       "vwap_dev": 6.6,
       "illiquidity_20": 0.02,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.0883
+      "high_vol_prob": 0.0882
     },
     {
       "date": "2026-02-05",
@@ -30375,7 +30375,7 @@
       "vwap_dev": 5.24,
       "illiquidity_20": 0.02,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.3927
+      "high_vol_prob": 0.3926
     },
     {
       "date": "2026-03-06",
@@ -30795,7 +30795,7 @@
       "vwap_dev": 7.08,
       "illiquidity_20": 0.02,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4103
+      "high_vol_prob": 0.4102
     },
     {
       "date": "2026-03-17",
@@ -30975,7 +30975,7 @@
       "vwap_dev": 9.03,
       "illiquidity_20": 0.02,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.373
+      "high_vol_prob": 0.3731
     },
     {
       "date": "2026-03-20",
@@ -31305,7 +31305,7 @@
       "vwap_dev": 8.13,
       "illiquidity_20": 0.07,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.1342
+      "high_vol_prob": 0.1341
     },
     {
       "date": "2026-03-27",
@@ -34515,7 +34515,7 @@
       "vwap_dev": -2.34,
       "illiquidity_20": 0.03,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.2443
+      "high_vol_prob": 0.2442
     },
     {
       "date": "2026-06-15",
@@ -35055,7 +35055,7 @@
       "vwap_dev": -5.73,
       "illiquidity_20": 0.03,
       "regime": "High Volatility",
-      "high_vol_prob": 0.5364
+      "high_vol_prob": 0.5363
     },
     {
       "date": "2026-06-26",
@@ -38625,7 +38625,7 @@
       "vwap_dev": -1.66,
       "illiquidity_20": 0.12,
       "regime": "High Volatility",
-      "high_vol_prob": 0.7603
+      "high_vol_prob": 0.7602
     },
     {
       "date": "2026-09-22",
@@ -39060,7 +39060,7 @@
       "vwap_dev": -7.47,
       "illiquidity_20": 0.08,
       "regime": "Low Volatility",
-      "high_vol_prob": 0.4023
+      "high_vol_prob": 0.4022
     },
     {
       "date": "2026-10-01",
@@ -43816,6 +43816,11 @@
       "date": "2026-10-09",
       "wti_front": 91.85,
       "wti_12m": 83.95
+    },
+    {
+      "date": "2026-10-12",
+      "wti_front": 93.74,
+      "wti_12m": 85.81
     }
   ]
 }
